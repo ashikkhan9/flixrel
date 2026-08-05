@@ -1,32 +1,32 @@
-<!-- ========== মোবাইল ফ্রেন্ডলি ভিডিও প্লেয়ার ও সার্ভার কোড ========== -->
-<div style="width: 100%; max-width: 1000px; margin: 10px auto; text-align: center; font-family: sans-serif; box-sizing: border-box; padding: 0 10px;">
+<!-- ========== মোবাইল ফুল-ডিসপ্লে ফিট ভিডিও প্লেয়ার কোড ========== -->
+<div style="width: 100%; max-width: 1000px; margin: 0 auto; text-align: center; font-family: sans-serif; box-sizing: border-box;">
   
-  <!-- মোবাইল ও পিসির জন্য নিরাপদ রেসপন্সিভ প্লেয়ার কন্টেইনার -->
-  <div id="player-wrapper" style="width: 100%; height: 280px; max-height: 500px; background: #000; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); position: relative;">
+  <!-- রেসপন্সিভ ভিডিও কন্টেইনার (মোবাইলে পারফেক্ট ফিট হওয়ার জন্য) -->
+  <div id="player-wrapper" style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
     <iframe id="video-player" src="" 
-            style="width: 100%; height: 100%; border: none;" 
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; object-fit: cover;" 
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
             allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true">
     </iframe>
   </div>
 
   <!-- সার্ভার সিলেকশন বাটন -->
-  <div id="server-buttons" style="margin-top: 15px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-    <button onclick="changeServer(1)" style="padding: 10px 15px; cursor: pointer; background: #e50914; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 13px;">Server 1 (VidSrc)</button>
-    <button onclick="changeServer(2)" style="padding: 10px 15px; cursor: pointer; background: #333; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 13px;">Server 2 (PRO)</button>
-    <button onclick="changeServer(3)" style="padding: 10px 15px; cursor: pointer; background: #333; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 13px;">Server 3 (ME)</button>
-    <button onclick="changeServer(4)" style="padding: 10px 15px; cursor: pointer; background: #333; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 13px;">Server 4 (SU)</button>
+  <div id="server-buttons" style="margin-top: 12px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">
+    <button onclick="changeServer(1)" style="padding: 8px 12px; cursor: pointer; background: #e50914; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 12px;">Server 1</button>
+    <button onclick="changeServer(2)" style="padding: 8px 12px; cursor: pointer; background: #333; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 12px;">Server 2</button>
+    <button onclick="changeServer(3)" style="padding: 8px 12px; cursor: pointer; background: #333; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 12px;">Server 3</button>
+    <button onclick="changeServer(4)" style="padding: 8px 12px; cursor: pointer; background: #333; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 12px;">Server 4</button>
   </div>
 
-  <!-- ১-ক্লিক ফুল-স্ক্রিন বোতাম -->
-  <button onclick="goFullScreen()" style="margin-top: 12px; padding: 12px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 15px; width: 100%;">
-    📺 Full Screen (ফুল স্ক্রিন করুন)
+  <!-- ফুল-স্ক্রিন বোতাম -->
+  <button onclick="goFullScreen()" style="margin-top: 10px; padding: 10px 15px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 14px; width: 100%;">
+    📺 Full Screen (ফুল স্ক্রিন)
   </button>
 
 </div>
 
 <script>
-  // URL থেকে মুভির ID বা লোকাল স্টোরেজ থেকে আইডি নেওয়া
+  // URL থেকে মুভির ID নেওয়া
   const urlParams = new URLSearchParams(window.location.search);
   let tmdbId = urlParams.get('id') || urlParams.get('tmdb') || urlParams.get('movie') || localStorage.getItem('selected_movie_id') || "299534";
 
