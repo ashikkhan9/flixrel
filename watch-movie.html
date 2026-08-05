@@ -1,15 +1,15 @@
-<!-- ========== ভিডিও প্লেয়ার এবং সার্ভার বাটন (এখান থেকে কপি করুন) ========== -->
-<div style="width: 100%; max-width: 1000px; margin: 20px auto; text-align: center;">
+<!-- ========== ভিডিও প্লেয়ার, সার্ভার এবং ফুল-স্ক্রিন বাটন (এখান থেকে কপি করুন) ========== -->
+<div style="width: 100%; max-width: 1000px; margin: 20px auto; text-align: center; font-family: sans-serif;">
   
-  <!-- রেসপন্সিভ ভিডিও প্লেয়ার (Iframe) -->
-  <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; background: #000; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+  <!-- ভিডিও কন্টেইনার (এটিই ফুল-স্ক্রিন হবে) -->
+  <div id="player-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; background: #000; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
     <iframe id="video-player" src="" 
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
             allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true">
     </iframe>
   </div>
 
-  <!-- সার্ভার বাটনসমূহ -->
+  <!-- সার্ভার সিলেকশন বাটন -->
   <div id="server-buttons" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
     <button onclick="changeServer(1)" style="padding: 10px 20px; cursor: pointer; background: #e50914; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 14px; transition: 0.3s;">Server 1 (VidSrc)</button>
     <button onclick="changeServer(2)" style="padding: 10px 20px; cursor: pointer; background: #333; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 14px; transition: 0.3s;">Server 2 (PRO)</button>
@@ -17,19 +17,24 @@
     <button onclick="changeServer(4)" style="padding: 10px 20px; cursor: pointer; background: #333; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 14px; transition: 0.3s;">Server 4 (SU)</button>
   </div>
 
+  <!-- ১-ক্লিক ফুল-স্ক্রিন বোতাম -->
+  <button onclick="goFullScreen()" style="margin-top: 15px; padding: 12px 25px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; transition: 0.3s; width: 100%; max-width: 300px;">
+    📺 Full Screen (ফুল স্ক্রিন)
+  </button>
+
 </div>
 
 <script>
-  // আপনার ওয়েবসাইটের URL থেকে মুভির ID সংগ্রহ করা (যেমন: watch-movie.html?id=12345)
+  // URL থেকে মুভির ID সংগ্রহ করা
   const urlParams = new URLSearchParams(window.location.search);
   let tmdbId = urlParams.get('id') || urlParams.get('tmdb') || urlParams.get('movie');
   
-  // যদি কোনো কারণে URL-এ ID না থাকে, তবে ফলব্যাক হিসেবে একটি মুভি প্লে হবে (টেস্ট করার জন্য)
+  // URL-এ ID না থাকলে ডিফল্ট মুভি প্লে হবে
   if (!tmdbId) {
-    tmdbId = "299534"; // Avengers ID
+    tmdbId = "299534"; 
   }
 
-  // সার্ভারগুলোর লিংক 
+  // সার্ভার লিংকসমূহ
   const servers = {
     1: `https://vidsrc.to/embed/movie/${tmdbId}`,
     2: `https://vidsrc.pro/embed/movie/${tmdbId}`,
@@ -37,27 +42,42 @@
     4: `https://embed.su/embed/movie/${tmdbId}`
   };
 
-  // সার্ভার পরিবর্তন ও বাটনের স্টাইল আপডেট করার ফাংশন
+  // সার্ভার পরিবর্তন ও বাটনের রঙ বদলানোর ফাংশন
   function changeServer(serverNumber) {
     const player = document.getElementById('video-player');
     
-    // বাটনের রঙ আপডেট করা (যেটি সিলেক্ট করা আছে সেটি লাল হবে, বাকিগুলো কালো)
+    // বাটনের রঙ আপডেট (সিলেক্ট করা সার্ভারটি লাল হবে)
     const buttons = document.getElementById('server-buttons').getElementsByTagName('button');
     for (let i = 0; i < buttons.length; i++) {
       if (i === (serverNumber - 1)) {
-        buttons[i].style.background = '#e50914'; // লাল রঙ (Active)
+        buttons[i].style.background = '#e50914'; 
       } else {
-        buttons[i].style.background = '#333';    // ডার্ক গ্রে (Inactive)
+        buttons[i].style.background = '#333';    
       }
     }
 
-    // প্লেয়ারে নতুন লিংক সেট করা
     if (servers[serverNumber]) {
       player.src = servers[serverNumber];
     }
   }
 
-  // পেজ লোড হওয়ার সাথে সাথে ১ নম্বর সার্ভারটি প্লে হবে
-  changeServer(1);
+  // যেকোনো ডিভাইসে ফুল-স্ক্রিন করার ফাংশন
+  function goFullScreen() {
+    const wrapper = document.getElementById('player-wrapper');
+    if (wrapper.requestFullscreen) {
+        wrapper.requestFullscreen();
+    } else if (wrapper.webkitRequestFullscreen) { /* Safari / iOS */
+        wrapper.webkitRequestFullscreen();
+    } else if (wrapper.msRequestFullscreen) { /* IE11 */
+        wrapper.msRequestFullscreen();
+    } else if (wrapper.mozRequestFullScreen) { /* Firefox */
+        wrapper.mozRequestFullScreen();
+    }
+  }
+
+  // পেজ লোড হলে ১ নম্বর সার্ভার দিয়ে শুরু হবে
+  window.onload = function() {
+    changeServer(1);
+  };
 </script>
 <!-- ========== কোড শেষ ========== -->
