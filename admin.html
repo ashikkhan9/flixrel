@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flixnest Admin - Master Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase v8 CDNs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <style>
+    body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .tab-active { background-color: #4f46e5; color: white; border-color: #4f46e5; }
+    .input-field { width: 100%; padding: 10px 15px; border-radius: 8px; background: #1e293b; border: 1px solid #334155; color: white; margin-top: 5px; outline: none; }
+    .input-field:focus { border-color: #6366f1; }
+    .btn-primary { background: #6366f1; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; width: 100%; }
+    .btn-primary:hover { background: #4f46e5; }
+  </style>
+</head>
+<body class="min-h-screen flex">
+
+  <!-- Sidebar -->
+  <aside class="w-64 glass h-screen p-5 fixed border-r border-slate-700 flex flex-col gap-2">
+    <div class="text-2xl font-bold text-indigo-400 mb-8 flex items-center gap-2">
+      🎥 Flixnest Admin
+    </div>
+    <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn tab-active text-left px-4 py-3 rounded-lg font-medium transition hover:bg-slate-700">📊 Dashboard</button>
+    <button onclick="switchTab('uploadMovie')" id="btn-uploadMovie" class="tab-btn text-left px-4 py-3 rounded-lg font-medium transition hover:bg-slate-700">🎬 Upload Movie/Natok</button>
+    <button onclick="switchTab('uploadSeries')" id="btn-uploadSeries" class="tab-btn text-left px-4 py-3 rounded-lg font-medium transition hover:bg-slate-700">📺 Manage Series</button>
+    <button onclick="switchTab('manage')" id="btn-manage" class="tab-btn text-left px-4 py-3 rounded-lg font-medium transition hover:bg-slate-700">⚙️ Manage Content</button>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="ml-64 p-8 w-full">
+    
+    <!-- Toast Notification -->
+    <div id="toast" class="hidden fixed top-5 right-5 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg font-bold transition-all z-50">
+      Message goes here
+    </div>
+
+    <!-- 1. Dashboard Tab -->
+    <section id="dashboard" class="tab-content block">
+      <h2 class="text-3xl font-bold mb-6 border-b border-slate-700 pb-2">Dashboard Overview</h2>
+      <div class="grid grid-cols-3 gap-6">
+        <div class="glass p-6 rounded-xl text-center">
+          <h3 class="text-slate-400 text-lg">Total Movies/Natok</h3>
+          <p id="stat-movies" class="text-4xl font-bold text-indigo-400 mt-2">...</p>
+        </div>
+        <div class="glass p-6 rounded-xl text-center">
+          <h3 class="text-slate-400 text-lg">Total Series</h3>
+          <p id="stat-series" class="text-4xl font-bold text-emerald-400 mt-2">...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Upload Movie/Natok Tab -->
+    <section id="uploadMovie" class="tab-content hidden max-w-2xl">
+      <h2 class="text-3xl font-bold mb-6 border-b border-slate-700 pb-2">Upload Movie or Natok</h2>
+      <form id="movieForm" class="glass p-6 rounded-xl space-y-4" onsubmit="handleMovieSubmit(event)">
+        <div>
+          <label class="text-sm font-semibold text-slate-300">Title</label>
+          <input type="text" id="m-title" class="input-field" placeholder="e.g. Inception" required>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-semibold text-slate-300">Type</label>
+            <select id="m-type" class="input-field">
+              <option value="movie">Movie</option>
+              <option value="natok">Natok</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-300">Release Year</label>
+            <input type="number" id="m-year" class="input-field" placeholder="2026" required>
+          </div>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-slate-300">Thumbnail URL (Poster)</label>
+          <input type="url" id="m-poster" class="input-field" placeholder="https://..." required>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-slate-300">Video Embed URL</label>
+          <input type="url" id="m-video" class="input-field" placeholder="https://vidsrc.com/..." required>
+        </div>
+        <button type="submit" id="btn-m-submit" class="btn-primary mt-4">Upload Content</button>
+      </form>
+    </section>
+
+    <!-- 3. Manage Series Tab (Create Series & Add Episodes) -->
+    <section id="uploadSeries" class="tab-content hidden grid grid-cols-2 gap-8">
+      <!-- Create Series -->
+      <div>
+        <h2 class="text-2xl font-bold mb-4 border-b border-slate-700 pb-2">1. Create New Series</h2>
+        <form id="seriesForm" class="glass p-6 rounded-xl space-y-4" onsubmit="handleSeriesSubmit(event)">
+          <div>
+            <label class="text-sm font-semibold text-slate-300">Series Title</label>
+            <input type="text" id="s-title" class="input-field" placeholder="e.g. CID" required>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-300">Series Poster URL</label>
+            <input type="url" id="s-poster" class="input-field" placeholder="https://..." required>
+          </div>
+          <button type="submit" id="btn-s-submit" class="btn-primary">Create Series</button>
+        </form>
+      </div>
+
+      <!-- Add Episode -->
+      <div>
+        <h2 class="text-2xl font-bold mb-4 border-b border-slate-700 pb-2">2. Add Episode to Series</h2>
+        <form id="episodeForm" class="glass p-6 rounded-xl space-y-4" onsubmit="handleEpisodeSubmit(event)">
+          <div>
+            <label class="text-sm font-semibold text-slate-300">Select Series</label>
+            <select id="ep-series" class="input-field" required>
+              <option value="">Loading series...</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm font-semibold text-slate-300">Season Number</label>
+              <input type="number" id="ep-season" class="input-field" value="1" required>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-300">Episode Number</label>
+              <input type="number" id="ep-number" class="input-field" value="1" required>
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-300">Episode Title</label>
+            <input type="text" id="ep-title" class="input-field" placeholder="e.g. The Beginning" required>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-300">Video Embed URL</label>
+            <input type="url" id="ep-video" class="input-field" placeholder="https://..." required>
+          </div>
+          <button type="submit" id="btn-ep-submit" class="btn-primary bg-emerald-600 hover:bg-emerald-500">Upload Episode</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- 4. Manage Content Tab -->
+    <section id="manage" class="tab-content hidden">
+      <h2 class="text-3xl font-bold mb-6 border-b border-slate-700 pb-2">Manage All Content</h2>
+      
+      <h3 class="text-xl font-bold text-indigo-400 mb-3 mt-6">Movies & Natok</h3>
+      <div class="glass p-4 rounded-xl">
+        <ul id="manage-movies-list" class="space-y-3">
+          <li class="text-slate-400">Loading...</li>
+        </ul>
+      </div>
+
+      <h3 class="text-xl font-bold text-emerald-400 mb-3 mt-8">Series</h3>
+      <div class="glass p-4 rounded-xl">
+        <ul id="manage-series-list" class="space-y-3">
+          <li class="text-slate-400">Loading...</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // 1. Firebase Initialization
+    const firebaseConfig = {
+      apiKey: "AIzaSyC149Y2CR46kYH2StZCJXc-87BP9EroIcg",
+      authDomain: "flixrel.firebaseapp.com",
+      projectId: "flixrel",
+      storageBucket: "flixrel.firebasestorage.app",
+      messagingSenderId: "838788026123",
+      appId: "1:838788026123:web:dfca0835a24b4816499c0e"
+    };
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
+
+    // 2. UI Logic (Tab Switching & Toast)
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('tab-active');
+        el.classList.add('hover:bg-slate-700');
+      });
+      document.getElementById(tabId).classList.remove('hidden');
+      document.getElementById('btn-' + tabId).classList.add('tab-active');
+      document.getElementById('btn-' + tabId).classList.remove('hover:bg-slate-700');
+    }
+
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.className = `fixed top-5 right-5 px-6 py-3 rounded-lg shadow-lg font-bold transition-all z-50 ${isError ? 'bg-red-500' : 'bg-emerald-500'}`;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+
+    // 3. Form Submit - Movie/Natok
+    async function handleMovieSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-m-submit');
+      btn.innerText = "Uploading..."; btn.disabled = true;
+
+      const data = {
+        title: document.getElementById('m-title').value,
+        type: document.getElementById('m-type').value,
+        releaseYear: parseInt(document.getElementById('m-year').value),
+        thumbnailUrl: document.getElementById('m-poster').value,
+        videoUrl: document.getElementById('m-video').value,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        await db.collection("movies").add(data);
+        showToast("✅ Movie/Natok Uploaded Successfully!");
+        document.getElementById('movieForm').reset();
+      } catch (error) {
+        showToast("❌ Error: " + error.message, true);
+      }
+      btn.innerText = "Upload Content"; btn.disabled = false;
+    }
+
+    // 4. Form Submit - Create Series
+    async function handleSeriesSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-s-submit');
+      btn.innerText = "Creating..."; btn.disabled = true;
+
+      const data = {
+        title: document.getElementById('s-title').value,
+        thumbnailUrl: document.getElementById('s-poster').value,
+        totalSeasons: 1,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        await db.collection("series").add(data);
+        showToast("✅ Series Created Successfully!");
+        document.getElementById('seriesForm').reset();
+      } catch (error) {
+        showToast("❌ Error: " + error.message, true);
+      }
+      btn.innerText = "Create Series"; btn.disabled = false;
+    }
+
+    // 5. Form Submit - Add Episode
+    async function handleEpisodeSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-ep-submit');
+      btn.innerText = "Uploading..."; btn.disabled = true;
+
+      const seriesId = document.getElementById('ep-series').value;
+      const seasonNum = document.getElementById('ep-season').value;
+      const epData = {
+        episodeNumber: parseInt(document.getElementById('ep-number').value),
+        title: document.getElementById('ep-title').value,
+        videoUrl: document.getElementById('ep-video').value,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        // Using string formatting for nested structure: series/{id}/seasons/{s_num}/episodes
+        await db.collection("series").doc(seriesId)
+                .collection("seasons").doc("season_"+seasonNum)
+                .collection("episodes").add(epData);
+        showToast("✅ Episode Uploaded Successfully!");
+        document.getElementById('episodeForm').reset();
+        document.getElementById('ep-series').value = seriesId; // keep series selected
+      } catch (error) {
+        showToast("❌ Error: " + error.message, true);
+      }
+      btn.innerText = "Upload Episode"; btn.disabled = false;
+    }
+
+    // 6. Delete Functions
+    async function deleteMovie(id) {
+      if(confirm("Are you sure you want to delete this?")) {
+        await db.collection("movies").doc(id).delete();
+        showToast("🗑️ Deleted Successfully!");
+      }
+    }
+    
+    async function deleteSeries(id) {
+      if(confirm("Delete this series? (Episodes will be orphaned unless using a Cloud Function)")) {
+        await db.collection("series").doc(id).delete();
+        showToast("🗑️ Series Deleted!");
+      }
+    }
+
+    // 7. Realtime Listeners (Dashboard Stats & Manage Lists)
+    db.collection("movies").onSnapshot((snapshot) => {
+      document.getElementById("stat-movies").innerText = snapshot.size;
+      const list = document.getElementById("manage-movies-list");
+      list.innerHTML = "";
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        list.innerHTML += `
+          <li class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
+            <div class="flex items-center gap-4">
+              <img src="${d.thumbnailUrl}" class="w-10 h-14 object-cover rounded">
+              <div>
+                <strong class="text-white">${d.title}</strong>
+                <span class="text-xs ml-2 bg-indigo-500 px-2 py-1 rounded">${d.type}</span>
+              </div>
+            </div>
+            <button onclick="deleteMovie('${doc.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-bold">Delete</button>
+          </li>`;
+      });
+    });
+
+    db.collection("series").onSnapshot((snapshot) => {
+      document.getElementById("stat-series").innerText = snapshot.size;
+      const selectBox = document.getElementById("ep-series");
+      const list = document.getElementById("manage-series-list");
+      
+      selectBox.innerHTML = '<option value="">Select a Series...</option>';
+      list.innerHTML = "";
+
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        // Populate dropdown
+        selectBox.innerHTML += `<option value="${doc.id}">${d.title}</option>`;
+        
+        // Populate manage list
+        list.innerHTML += `
+          <li class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
+            <div class="flex items-center gap-4">
+              <img src="${d.thumbnailUrl}" class="w-10 h-14 object-cover rounded">
+              <div>
+                <strong class="text-white">${d.title}</strong>
+              </div>
+            </div>
+            <button onclick="deleteSeries('${doc.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-bold">Delete</button>
+          </li>`;
+      });
+    });
+  </script>
+</body>
+</html>

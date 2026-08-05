@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch Series - Flixnest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase v8 CDNs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <style>
+    body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+  </style>
+</head>
+<body class="p-8">
+
+  <div class="max-w-4xl mx-auto">
+    <a href="index.html" class="text-indigo-400 hover:underline mb-6 inline-block">&larr; Back to Home</a>
+    
+    <!-- Series Header Info -->
+    <div id="series-info" class="glass p-6 rounded-2xl mb-8 flex gap-6 items-center">
+      <p class="text-slate-400">Loading series details...</p>
+    </div>
+
+    <!-- Episodes List -->
+    <h3 class="text-2xl font-bold mb-4 text-emerald-400">Episodes</h3>
+    <div id="episodes-container" class="space-y-4">
+      <p class="text-slate-400">Loading episodes...</p>
+    </div>
+  </div>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC149Y2CR46kYH2StZCJXc-87BP9EroIcg",
+      authDomain: "flixrel.firebaseapp.com",
+      projectId: "flixrel",
+      storageBucket: "flixrel.firebasestorage.app",
+      messagingSenderId: "838788026123",
+      appId: "1:838788026123:web:dfca0835a24b4816499c0e"
+    };
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
+
+    // URL থেকে Series ID বের করা
+    const urlParams = new URLSearchParams(window.location.search);
+    const seriesId = urlParams.get('id');
+
+    if (!seriesId) {
+      document.body.innerHTML = "<h2 class='text-center text-red-500 text-2xl mt-20'>Series ID not found!</h2>";
+    } else {
+      // ১. সিরিজের বেসিক তথ্য ফেচ করা
+      db.collection("series").doc(seriesId).get().then(doc => {
+        if(doc.exists) {
+          const series = doc.data();
+          document.getElementById("series-info").innerHTML = `
+            <img src="${series.thumbnailUrl}" class="w-32 h-48 object-cover rounded-xl shadow-md">
+            <div>
+              <h1 class="text-3xl font-bold mb-2">${series.title}</h1>
+              <p class="text-slate-300">Master Class OTT Series Collection</p>
+            </div>
+          `;
+        }
+      });
+
+      // ২. এপিসোডগুলো ফেচ করা (Season 1 থেকে ডেটা লোড করার লজিক)
+      db.collection("series").doc(seriesId)
+        .collection("seasons").doc("season_1")
+        .collection("episodes").orderBy("episodeNumber", "asc")
+        .get().then(snapshot => {
+          const container = document.getElementById("episodes-container");
+          container.innerHTML = "";
+
+          if(snapshot.empty) {
+            container.innerHTML = "<p class='text-slate-400'>এই সিরিজে এখনো কোনো এপিসোড আপলোড করা হয়নি।</p>";
+            return;
+          }
+
+          snapshot.forEach(epDoc => {
+            const ep = epDoc.data();
+            container.innerHTML += `
+              <div class="glass p-4 rounded-xl flex justify-between items-center">
+                <div>
+                  <span class="text-xs bg-emerald-500 text-white px-2 py-1 rounded font-bold mr-2">EP ${ep.episodeNumber}</span>
+                  <strong class="text-lg text-white">${ep.title}</strong>
+                </div>
+                <a href="${ep.videoUrl}" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-semibold transition">Watch Episode</a>
+              </div>
+            `;
+          });
+        });
+    }
+  </script>
+</body>
+</html>

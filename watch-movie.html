@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch Movie - Flixnest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase v8 CDNs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <style>
+    body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; }
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+  </style>
+</head>
+<body class="p-8">
+
+  <div class="max-w-4xl mx-auto">
+    <a href="index.html" class="text-indigo-400 hover:underline mb-6 inline-block">&larr; Back to Home</a>
+    
+    <!-- Video Player Box -->
+    <div class="video-container mb-6 shadow-2xl">
+      <iframe id="movie-player" src="" allowfullscreen></iframe>
+    </div>
+
+    <!-- Movie Details -->
+    <div id="movie-details" class="glass p-6 rounded-2xl">
+      <h1 id="m-title" class="text-2xl font-bold mb-2">Loading movie...</h1>
+      <p id="m-meta" class="text-slate-400 text-sm mb-4"></p>
+    </div>
+  </div>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC149Y2CR46kYH2StZCJXc-87BP9EroIcg",
+      authDomain: "flixrel.firebaseapp.com",
+      projectId: "flixrel",
+      storageBucket: "flixrel.firebasestorage.app",
+      messagingSenderId: "838788026123",
+      appId: "1:838788026123:web:dfca0835a24b4816499c0e"
+    };
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
+
+    // URL থেকে Movie ID বের করা
+    const urlParams = new URLSearchParams(window.location.search);
+    const movieId = urlParams.get('id');
+
+    if (!movieId) {
+      document.body.innerHTML = "<h2 class='text-center text-red-500 text-2xl mt-20'>Movie ID not found!</h2>";
+    } else {
+      db.collection("movies").doc(movieId).get().then(doc => {
+        if(doc.exists) {
+          const movie = doc.data();
+          document.getElementById("movie-player").src = movie.videoUrl;
+          document.getElementById("m-title").innerText = movie.title;
+          document.getElementById("m-meta").innerHTML = `${movie.releaseYear} • <span class="uppercase font-bold text-indigo-400">${movie.type}</span>`;
+        } else {
+          document.getElementById("movie-details").innerHTML = "<p class='text-red-400'>মুভিটি পাওয়া যায়নি বা রিমুভ করা হয়েছে।</p>";
+        }
+      }).catch(err => {
+        console.error(err);
+      });
+    }
+  </script>
+</body>
+</html>
