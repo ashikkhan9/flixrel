@@ -1,38 +1,34 @@
-<!-- ========== ভিডিও প্লেয়ার, সার্ভার এবং ফুল-স্ক্রিন বাটন (এখান থেকে কপি করুন) ========== -->
-<div style="width: 100%; max-width: 1000px; margin: 20px auto; text-align: center; font-family: sans-serif;">
+<!-- ========== মোবাইল ফ্রেন্ডলি ভিডিও প্লেয়ার ও সার্ভার কোড ========== -->
+<div style="width: 100%; max-width: 1000px; margin: 10px auto; text-align: center; font-family: sans-serif; box-sizing: border-box; padding: 0 10px;">
   
-  <!-- ভিডিও কন্টেইনার (এটিই ফুল-স্ক্রিন হবে) -->
-  <div id="player-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; background: #000; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+  <!-- মোবাইল ও পিসির জন্য নিরাপদ রেসপন্সিভ প্লেয়ার কন্টেইনার -->
+  <div id="player-wrapper" style="width: 100%; height: 280px; max-height: 500px; background: #000; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); position: relative;">
     <iframe id="video-player" src="" 
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
+            style="width: 100%; height: 100%; border: none;" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
             allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true">
     </iframe>
   </div>
 
   <!-- সার্ভার সিলেকশন বাটন -->
-  <div id="server-buttons" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-    <button onclick="changeServer(1)" style="padding: 10px 20px; cursor: pointer; background: #e50914; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 14px; transition: 0.3s;">Server 1 (VidSrc)</button>
-    <button onclick="changeServer(2)" style="padding: 10px 20px; cursor: pointer; background: #333; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 14px; transition: 0.3s;">Server 2 (PRO)</button>
-    <button onclick="changeServer(3)" style="padding: 10px 20px; cursor: pointer; background: #333; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 14px; transition: 0.3s;">Server 3 (ME)</button>
-    <button onclick="changeServer(4)" style="padding: 10px 20px; cursor: pointer; background: #333; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 14px; transition: 0.3s;">Server 4 (SU)</button>
+  <div id="server-buttons" style="margin-top: 15px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+    <button onclick="changeServer(1)" style="padding: 10px 15px; cursor: pointer; background: #e50914; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 13px;">Server 1 (VidSrc)</button>
+    <button onclick="changeServer(2)" style="padding: 10px 15px; cursor: pointer; background: #333; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 13px;">Server 2 (PRO)</button>
+    <button onclick="changeServer(3)" style="padding: 10px 15px; cursor: pointer; background: #333; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 13px;">Server 3 (ME)</button>
+    <button onclick="changeServer(4)" style="padding: 10px 15px; cursor: pointer; background: #333; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 13px;">Server 4 (SU)</button>
   </div>
 
   <!-- ১-ক্লিক ফুল-স্ক্রিন বোতাম -->
-  <button onclick="goFullScreen()" style="margin-top: 15px; padding: 12px 25px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; transition: 0.3s; width: 100%; max-width: 300px;">
-    📺 Full Screen (ফুল স্ক্রিন)
+  <button onclick="goFullScreen()" style="margin-top: 12px; padding: 12px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 15px; width: 100%;">
+    📺 Full Screen (ফুল স্ক্রিন করুন)
   </button>
 
 </div>
 
 <script>
-  // URL থেকে মুভির ID সংগ্রহ করা
+  // URL থেকে মুভির ID বা লোকাল স্টোরেজ থেকে আইডি নেওয়া
   const urlParams = new URLSearchParams(window.location.search);
-  let tmdbId = urlParams.get('id') || urlParams.get('tmdb') || urlParams.get('movie');
-  
-  // URL-এ ID না থাকলে ডিফল্ট মুভি প্লে হবে
-  if (!tmdbId) {
-    tmdbId = "299534"; 
-  }
+  let tmdbId = urlParams.get('id') || urlParams.get('tmdb') || urlParams.get('movie') || localStorage.getItem('selected_movie_id') || "299534";
 
   // সার্ভার লিংকসমূহ
   const servers = {
@@ -42,11 +38,10 @@
     4: `https://embed.su/embed/movie/${tmdbId}`
   };
 
-  // সার্ভার পরিবর্তন ও বাটনের রঙ বদলানোর ফাংশন
+  // সার্ভার পরিবর্তন ও স্টাইল আপডেট ফাংশন
   function changeServer(serverNumber) {
     const player = document.getElementById('video-player');
     
-    // বাটনের রঙ আপডেট (সিলেক্ট করা সার্ভারটি লাল হবে)
     const buttons = document.getElementById('server-buttons').getElementsByTagName('button');
     for (let i = 0; i < buttons.length; i++) {
       if (i === (serverNumber - 1)) {
@@ -61,21 +56,21 @@
     }
   }
 
-  // যেকোনো ডিভাইসে ফুল-স্ক্রিন করার ফাংশন
+  // ফুল-স্ক্রিন ফাংশন
   function goFullScreen() {
     const wrapper = document.getElementById('player-wrapper');
     if (wrapper.requestFullscreen) {
         wrapper.requestFullscreen();
-    } else if (wrapper.webkitRequestFullscreen) { /* Safari / iOS */
+    } else if (wrapper.webkitRequestFullscreen) { 
         wrapper.webkitRequestFullscreen();
-    } else if (wrapper.msRequestFullscreen) { /* IE11 */
+    } else if (wrapper.msRequestFullscreen) { 
         wrapper.msRequestFullscreen();
-    } else if (wrapper.mozRequestFullScreen) { /* Firefox */
+    } else if (wrapper.mozRequestFullScreen) { 
         wrapper.mozRequestFullScreen();
     }
   }
 
-  // পেজ লোড হলে ১ নম্বর সার্ভার দিয়ে শুরু হবে
+  // পেজ লোড হলে ১ নম্বর সার্ভার প্লে হবে
   window.onload = function() {
     changeServer(1);
   };
