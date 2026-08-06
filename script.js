@@ -56,7 +56,14 @@ const els = {
   watchModalTitle: $('#watch-modal-title'),
   watchModalClose: $('#watch-modal-close'),
   watchModalDetails: $('#watch-modal-details'),
-  watchPlayer: $('#watch-player'),
+  
+  // 🔥 New Premium Player Refs 🔥
+  mainVideo: $('#mainVideo'),
+  videoContainer: $('#videoContainer'),
+  centerPlayBtn: $('#centerPlayBtn'),
+  playPauseBtn: $('#playPauseBtn'),
+  fullScreenBtn: $('#fullScreenBtn'),
+  
   modalBackdrop: $('#modal-backdrop'),
   modalPanel: $('#modal-panel'),
   modalClose: $('#modal-close'),
@@ -110,7 +117,9 @@ const firebaseConfig = {
   messagingSenderId: "838788026123",
   appId: "1:838788026123:web:dfca0835a24b4816499c0e"
 };
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.firestore();
 
 /* ─── Utilities ─────────────────────────────────────────────────────── */
@@ -153,7 +162,8 @@ function getVidsrcUrl(movieId) {
 window.switchServer = function() {
   if (!state.currentWatchMovieId) return;
   currentProviderIndex = (currentProviderIndex + 1) % EMBED_PROVIDERS.length;
-  els.watchPlayer.src = getVidsrcUrl(state.currentWatchMovieId);
+  // This will need adjustment if dealing with raw mp4s later
+  if(els.mainVideo) els.mainVideo.src = getVidsrcUrl(state.currentWatchMovieId);
   showToast('Server switched successfully!', 'info');
 };
 
@@ -394,7 +404,7 @@ function createMovieCard(movie, index) {
     toggleWatchlist(movie);
   });
 
-  card.addEventListener('click', () => openWatchModal(movie.id, movie.title, movie.embedUrl));
+  card.addEventListener('click', () => openWatchModal(movie.id, movie.title, movie.embedUrl, movie.poster_path));
 
   return card;
 }
@@ -517,24 +527,91 @@ async function fetchMovies(reset = false) {
   }
 }
 
-/* ─── Watch Modal ───────────────────────────────────────────────────── */
-function openWatchModal(movieId, title = 'Movie', customEmbedUrl = null) {
+/* ─── Watch Modal & Premium Player Logic ────────────────────────────── */
+function openWatchModal(movieId, title = 'Movie', customEmbedUrl = null, posterPath = null) {
   state.currentWatchMovieId = movieId;
   els.watchModalTitle.textContent = title;
-  els.watchPlayer.src = customEmbedUrl ? customEmbedUrl : getVidsrcUrl(movieId);
+  
+  // Set Video Poster
+  if (posterPath && els.mainVideo) {
+     els.mainVideo.poster = posterUrl(posterPath, BACKDROP_SIZE);
+  }
+
+  // Set Video Source (Temporarily using dummy link for testing)
+  // In real life, here you will fetch the scraped direct .mp4 or .m3u8 link
+  const dummyVideoLink = "https://www.w3schools.com/html/mov_bbb.mp4";
+  if(els.mainVideo) {
+      els.mainVideo.src = customEmbedUrl ? customEmbedUrl : dummyVideoLink; 
+      
+      // Reset Player UI
+      els.centerPlayBtn.classList.remove('hidden');
+      els.playPauseBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  }
 
   els.watchModal.classList.remove('hidden');
   els.watchModal.classList.add('flex');
   document.body.style.overflow = 'hidden';
 }
 
+// Close Modal
 els.watchModalClose.addEventListener('click', () => {
   els.watchModal.classList.add('hidden');
   els.watchModal.classList.remove('flex');
-  els.watchPlayer.src = '';
+  
+  if(els.mainVideo) {
+      els.mainVideo.pause();
+      els.mainVideo.src = '';
+  }
+  
   state.currentWatchMovieId = null;
   document.body.style.overflow = '';
 });
+
+// 🔥 Premium Player Play/Pause Logic
+function togglePlay() {
+    if (!els.mainVideo) return;
+    
+    if (els.mainVideo.paused) {
+        els.mainVideo.play();
+        els.centerPlayBtn.classList.add('hidden');
+        els.playPauseBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; // Pause Icon
+    } else {
+        els.mainVideo.pause();
+        els.centerPlayBtn.classList.remove('hidden');
+        els.playPauseBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'; // Play Icon
+    }
+}
+
+// Attach Play events
+if(els.centerPlayBtn) els.centerPlayBtn.addEventListener('click', togglePlay);
+if(els.playPauseBtn) els.playPauseBtn.addEventListener('click', togglePlay);
+if(els.mainVideo) els.mainVideo.addEventListener('click', togglePlay);
+
+// 🔥 Native Full-Screen API Logic
+if(els.fullScreenBtn) {
+    els.fullScreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            // Enter Fullscreen
+            if (els.videoContainer.requestFullscreen) {
+                els.videoContainer.requestFullscreen();
+            } else if (els.videoContainer.webkitRequestFullscreen) { /* Safari */
+                els.videoContainer.webkitRequestFullscreen();
+            } else if (els.videoContainer.msRequestFullscreen) { /* IE11 */
+                els.videoContainer.msRequestFullscreen();
+            }
+        } else {
+            // Exit Fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) { /* Safari */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE11 */
+                document.msExitFullscreen();
+            }
+        }
+    });
+}
+
 
 els.searchInput?.addEventListener('input', (e) => debouncedSearch(e.target.value));
 
@@ -562,7 +639,7 @@ function initInfiniteScroll() {
   if (els.scrollSentinel) observer.observe(els.scrollSentinel);
 }
 
-// ইনিশিয়ালাইজেশন
+// Initialization
 initVibeFilters();
 initInfiniteScroll();
 loadWatchlist();
