@@ -151,8 +151,8 @@ function getVidsrcUrl(movieId) {
 window.switchServer = function() {
   if (!state.currentWatchMovieId) return;
   currentProviderIndex = (currentProviderIndex + 1) % EMBED_PROVIDERS.length;
-  if(els.watchPlayer) els.watchPlayer.src = getVidsrcUrl(state.currentWatchMovieId);
-  showToast('Server switched successfully!', 'info');
+  // Fallback iframe logic is removed, backend API handles links now.
+  showToast('Server switched! (Please reload the movie)', 'info');
 };
 
 function isApiConfigured() {
@@ -509,26 +509,80 @@ async function fetchMovies(reset = false) {
   }
 }
 
-function openWatchModal(movieId, title = 'Movie', customEmbedUrl = null) {
+/* ─── Premium Raw Player Logic (Plyr + HLS + API) ────────────────────────────── */
+let player;
+let hls;
+
+function initPlayer() {
+  if (!player) {
+    player = new Plyr('#watch-player', {
+       controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'captions', 'settings', 'fullscreen'],
+       settings: ['quality', 'speed'],
+    });
+  }
+}
+
+async function openWatchModal(movieId, title = 'Movie') {
   state.currentWatchMovieId = movieId;
   els.watchModalTitle.textContent = title;
   
-  if(els.watchPlayer) {
-      els.watchPlayer.src = customEmbedUrl ? customEmbedUrl : getVidsrcUrl(movieId); 
-  }
-
   els.watchModal.classList.remove('hidden');
   els.watchModal.classList.add('flex');
   document.body.style.overflow = 'hidden';
+  
+  initPlayer();
+  showToast("Fetching premium stream...", "info");
+  
+  try {
+    // Calling your Netlify Backend API
+    const response = await fetch(`/.netlify/functions/getMovie?id=${movieId}`);
+    const data = await response.json();
+    
+    if (data.success && data.streamUrl) {
+        const video = document.getElementById('watch-player');
+        
+        // HLS Streaming Logic
+        if (Hls.isSupported()) {
+            if (hls) hls.destroy();
+            hls = new Hls();
+            hls.loadSource(data.streamUrl);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                showToast("Stream loaded successfully!", "success");
+            });
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            // Apple Safari Support
+            video.src = data.streamUrl;
+        }
+        
+        // Download Button Setup
+        const dlBtn = document.getElementById('download-btn');
+        if (data.downloadUrl) {
+            dlBtn.href = data.downloadUrl;
+            dlBtn.classList.remove('hidden');
+            dlBtn.classList.add('inline-flex');
+        }
+    } else {
+        showToast("Stream not found in server!", "remove");
+    }
+  } catch(e) {
+    showToast("Failed to connect to backend!", "remove");
+  }
 }
 
 els.watchModalClose.addEventListener('click', () => {
   els.watchModal.classList.add('hidden');
   els.watchModal.classList.remove('flex');
   
-  if(els.watchPlayer) {
-      els.watchPlayer.src = '';
+  if (hls) {
+     hls.destroy();
   }
+  if (player) {
+     player.stop();
+  }
+  
+  const dlBtn = document.getElementById('download-btn');
+  if(dlBtn) dlBtn.classList.add('hidden');
   
   state.currentWatchMovieId = null;
   document.body.style.overflow = '';
