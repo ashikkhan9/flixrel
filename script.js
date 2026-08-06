@@ -20,7 +20,6 @@ const POSTER_SIZE = 'w500';
 const BACKDROP_SIZE = 'w1280';
 const THUMB_SIZE = 'w342';
 
-/* ─── State ─────────────────────────────────────────────────────────── */
 const state = {
   movies: [],
   page: 1,
@@ -36,7 +35,6 @@ const state = {
   watchlistOnly: false,
 };
 
-/* ─── DOM Refs ──────────────────────────────────────────────────────── */
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
@@ -56,14 +54,7 @@ const els = {
   watchModalTitle: $('#watch-modal-title'),
   watchModalClose: $('#watch-modal-close'),
   watchModalDetails: $('#watch-modal-details'),
-  
-  // 🔥 New Premium Player Refs 🔥
-  mainVideo: $('#mainVideo'),
-  videoContainer: $('#videoContainer'),
-  centerPlayBtn: $('#centerPlayBtn'),
-  playPauseBtn: $('#playPauseBtn'),
-  fullScreenBtn: $('#fullScreenBtn'),
-  
+  watchPlayer: $('#watch-player'),
   modalBackdrop: $('#modal-backdrop'),
   modalPanel: $('#modal-panel'),
   modalClose: $('#modal-close'),
@@ -98,7 +89,6 @@ const els = {
   apiNotice: $('#api-notice'),
 };
 
-/* ─── Vibe Mapping ──────────────────────────────────────────────────── */
 const VIBE_CONFIG = {
   all: { title: 'Trending Now', endpoint: '/trending/movie/week' },
   viral: { title: 'Viral Section', endpoint: '/trending/movie/day' },
@@ -108,7 +98,6 @@ const VIBE_CONFIG = {
   'top-rated': { title: 'Top Rated Masterpieces', discover: { sort_by: 'vote_average.desc', 'vote_count.gte': 1000 } },
 };
 
-/* ─── Firebase Setup (v8) ───────────────────────────────────────────── */
 const firebaseConfig = {
   apiKey: "AIzaSyC149Y2CR46kYH2StZCJXc-87BP9EroIcg",
   authDomain: "flixrel.firebaseapp.com",
@@ -117,12 +106,12 @@ const firebaseConfig = {
   messagingSenderId: "838788026123",
   appId: "1:838788026123:web:dfca0835a24b4816499c0e"
 };
+
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
 
-/* ─── Utilities ─────────────────────────────────────────────────────── */
 function debounce(func, wait) {
   let timeout;
   return function(...args) {
@@ -162,8 +151,7 @@ function getVidsrcUrl(movieId) {
 window.switchServer = function() {
   if (!state.currentWatchMovieId) return;
   currentProviderIndex = (currentProviderIndex + 1) % EMBED_PROVIDERS.length;
-  // This will need adjustment if dealing with raw mp4s later
-  if(els.mainVideo) els.mainVideo.src = getVidsrcUrl(state.currentWatchMovieId);
+  if(els.watchPlayer) els.watchPlayer.src = getVidsrcUrl(state.currentWatchMovieId);
   showToast('Server switched successfully!', 'info');
 };
 
@@ -210,7 +198,6 @@ function showToast(message, type = 'success') {
   }, 3200);
 }
 
-/* ─── Watchlist ─────────────────────────────────────────────────────── */
 const WATCHLIST_KEY = 'flixnest_watchlist';
 
 function loadWatchlist() {
@@ -280,7 +267,6 @@ function syncWatchlistButtons(movieId) {
   });
 }
 
-/* ─── Skeletons & Tilt ──────────────────────────────────────────────── */
 function renderSkeletons(count = 10) {
   els.skeletonGrid.classList.remove('hidden');
   els.skeletonGrid.innerHTML = Array.from({ length: count }, () => `
@@ -346,7 +332,6 @@ function attachTilt(card, inner) {
   });
 }
 
-/* ─── Movie Card Rendering ──────────────────────────────────────────── */
 function createMovieCard(movie, index) {
   const card = document.createElement('article');
   card.className = 'movie-card stagger-item relative rounded-2xl cursor-pointer group';
@@ -404,7 +389,7 @@ function createMovieCard(movie, index) {
     toggleWatchlist(movie);
   });
 
-  card.addEventListener('click', () => openWatchModal(movie.id, movie.title, movie.embedUrl, movie.poster_path));
+  card.addEventListener('click', () => openWatchModal(movie.id, movie.title, movie.embedUrl));
 
   return card;
 }
@@ -418,7 +403,6 @@ function renderMovies(movies, append = false) {
   els.resultsCount.textContent = state.query ? `${els.movieGrid.children.length}+ results` : '';
 }
 
-/* ─── Fetching Data (TMDB + Firebase v8) ────────────────────────────── */
 async function fetchMovies(reset = false) {
   if (state.loading || (!state.hasMore && !reset)) return;
   if (!isApiConfigured()) {
@@ -440,11 +424,9 @@ async function fetchMovies(reset = false) {
     let results = [];
 
     if (state.query) {
-      // TMDB থেকে সার্চ ফলাফল আনা
       const data = await tmdbFetch('/search/movie', { query: state.query, page: state.page });
       let tmdbResults = data.results?.filter((m) => m.poster_path) || [];
 
-      // প্রথম পেজে ফায়ারবেস থেকে আপনার আপলোড করা মুভি/সিরিজগুলো সার্চ করা
       if (state.page === 1) {
         try {
           const snapshot = await db.collection("episodes").get();
@@ -527,25 +509,12 @@ async function fetchMovies(reset = false) {
   }
 }
 
-/* ─── Watch Modal & Premium Player Logic ────────────────────────────── */
-function openWatchModal(movieId, title = 'Movie', customEmbedUrl = null, posterPath = null) {
+function openWatchModal(movieId, title = 'Movie', customEmbedUrl = null) {
   state.currentWatchMovieId = movieId;
   els.watchModalTitle.textContent = title;
   
-  // Set Video Poster
-  if (posterPath && els.mainVideo) {
-     els.mainVideo.poster = posterUrl(posterPath, BACKDROP_SIZE);
-  }
-
-  // Set Video Source (Temporarily using dummy link for testing)
-  // In real life, here you will fetch the scraped direct .mp4 or .m3u8 link
-  const dummyVideoLink = "https://www.w3schools.com/html/mov_bbb.mp4";
-  if(els.mainVideo) {
-      els.mainVideo.src = customEmbedUrl ? customEmbedUrl : dummyVideoLink; 
-      
-      // Reset Player UI
-      els.centerPlayBtn.classList.remove('hidden');
-      els.playPauseBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  if(els.watchPlayer) {
+      els.watchPlayer.src = customEmbedUrl ? customEmbedUrl : getVidsrcUrl(movieId); 
   }
 
   els.watchModal.classList.remove('hidden');
@@ -553,65 +522,17 @@ function openWatchModal(movieId, title = 'Movie', customEmbedUrl = null, posterP
   document.body.style.overflow = 'hidden';
 }
 
-// Close Modal
 els.watchModalClose.addEventListener('click', () => {
   els.watchModal.classList.add('hidden');
   els.watchModal.classList.remove('flex');
   
-  if(els.mainVideo) {
-      els.mainVideo.pause();
-      els.mainVideo.src = '';
+  if(els.watchPlayer) {
+      els.watchPlayer.src = '';
   }
   
   state.currentWatchMovieId = null;
   document.body.style.overflow = '';
 });
-
-// 🔥 Premium Player Play/Pause Logic
-function togglePlay() {
-    if (!els.mainVideo) return;
-    
-    if (els.mainVideo.paused) {
-        els.mainVideo.play();
-        els.centerPlayBtn.classList.add('hidden');
-        els.playPauseBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; // Pause Icon
-    } else {
-        els.mainVideo.pause();
-        els.centerPlayBtn.classList.remove('hidden');
-        els.playPauseBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'; // Play Icon
-    }
-}
-
-// Attach Play events
-if(els.centerPlayBtn) els.centerPlayBtn.addEventListener('click', togglePlay);
-if(els.playPauseBtn) els.playPauseBtn.addEventListener('click', togglePlay);
-if(els.mainVideo) els.mainVideo.addEventListener('click', togglePlay);
-
-// 🔥 Native Full-Screen API Logic
-if(els.fullScreenBtn) {
-    els.fullScreenBtn.addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-            // Enter Fullscreen
-            if (els.videoContainer.requestFullscreen) {
-                els.videoContainer.requestFullscreen();
-            } else if (els.videoContainer.webkitRequestFullscreen) { /* Safari */
-                els.videoContainer.webkitRequestFullscreen();
-            } else if (els.videoContainer.msRequestFullscreen) { /* IE11 */
-                els.videoContainer.msRequestFullscreen();
-            }
-        } else {
-            // Exit Fullscreen
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) { /* Safari */
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { /* IE11 */
-                document.msExitFullscreen();
-            }
-        }
-    });
-}
-
 
 els.searchInput?.addEventListener('input', (e) => debouncedSearch(e.target.value));
 
@@ -639,7 +560,6 @@ function initInfiniteScroll() {
   if (els.scrollSentinel) observer.observe(els.scrollSentinel);
 }
 
-// Initialization
 initVibeFilters();
 initInfiniteScroll();
 loadWatchlist();
