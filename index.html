@@ -221,21 +221,15 @@
       }
     }
   </style>
-  
-  <!-- তোমার style.css এখানে অ্যাড করে নিও -->
   <link rel="stylesheet" href="style.css">
-  
 </head>
 <body class="min-h-screen font-display text-white antialiased selection:bg-indigo-500/30 selection:text-white">
 
-  <!-- Toast Container -->
   <div id="toast-container" class="fixed top-24 right-4 z-[100] flex flex-col gap-3 pointer-events-none max-w-sm w-full"></div>
 
-  <!-- Navbar -->
   <header id="navbar" class="fixed top-0 inset-x-0 z-50 glass border-b border-white/5 transition-all duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 gap-4">
-        <!-- Logo -->
         <a href="#" class="flex items-center gap-2.5 shrink-0 group">
           <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/25 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
             <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm3 2.5l7 3.5-7 3.5V8.5z"/></svg>
@@ -243,7 +237,6 @@
           <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-indigo-200 bg-clip-text text-transparent">Flixrel</span>
         </a>
 
-        <!-- Search -->
         <div class="flex-1 max-w-xl relative">
           <div class="relative group">
             <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 transition-colors duration-200 group-focus-within:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -272,7 +265,6 @@
           </div>
         </div>
 
-        <!-- Watchlist toggle -->
         <button
           id="watchlist-toggle"
           type="button"
@@ -286,7 +278,6 @@
     </div>
   </header>
 
-  <!-- Hero -->
   <section class="relative pt-28 pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
     <div class="text-center mb-10">
       <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-3">
@@ -296,7 +287,6 @@
       <p class="text-white/45 text-sm sm:text-base max-w-lg mx-auto">Curated cinema with 3D previews, vibe filters, and a lucky spin — powered by TMDB.</p>
     </div>
 
-    <!-- Mood / Vibe Filter Bar -->
     <div id="mood-bar" class="sticky top-[4.5rem] z-40 mb-8 mx-auto max-w-3xl">
       <div class="glass rounded-2xl p-2 flex flex-wrap items-center justify-center gap-2 shadow-xl shadow-black/20">
         <span class="text-xs text-white/35 uppercase tracking-widest px-2 hidden sm:inline">Vibe</span>
@@ -309,35 +299,28 @@
       </div>
     </div>
 
-    <!-- Section title -->
     <div class="flex items-center justify-between mb-6">
       <h2 id="section-title" class="text-lg font-semibold text-white/90 transition-all duration-300">Trending Now</h2>
       <p id="results-count" class="text-xs text-white/35"></p>
     </div>
 
-    <!-- Movie Grid -->
     <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5"></div>
 
-    <!-- Skeleton Grid (shown while loading) -->
     <div id="skeleton-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5 hidden"></div>
 
-    <!-- Infinite scroll sentinel -->
     <div id="scroll-sentinel" class="h-20 flex items-center justify-center mt-8">
       <div id="load-more-spinner" class="hidden">
         <div class="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-400 rounded-full animate-spin"></div>
       </div>
     </div>
 
-    <!-- Firebase Latest Movies Section -->
     <div class="mt-16 pt-8 border-t border-white/10">
       <h2 class="text-2xl text-white font-bold mb-5">Latest Movies (Firebase Database)</h2>
       <div id="movies-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        <!-- Firebase dynamic data will load here -->
       </div>
     </div>
   </section>
 
-  <!-- Feeling Lucky Floating Button -->
   <div class="fixed bottom-8 right-6 z-40 animate-float">
     <button
       id="lucky-btn"
@@ -357,7 +340,6 @@
     </button>
   </div>
 
-  <!-- Lucky Wheel Modal -->
   <div id="wheel-modal" class="fixed inset-0 z-[90] hidden items-center justify-center p-4" aria-hidden="true">
     <div class="wheel-backdrop absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
     <div class="wheel-panel relative glass-strong rounded-3xl p-8 max-w-sm w-full text-center scale-90 opacity-0 transition-all duration-500">
@@ -369,7 +351,6 @@
         </div>
         <svg id="lucky-wheel" viewBox="0 0 200 200" class="w-full h-full drop-shadow-2xl">
           <circle cx="100" cy="100" r="98" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
-          <!-- Segments injected by JS -->
           <g id="wheel-segments"></g>
           <circle cx="100" cy="100" r="18" fill="#0b0f19" stroke="rgba(129,140,248,0.5)" stroke-width="2"/>
           <circle cx="100" cy="100" r="8" fill="#6366f1"/>
@@ -382,10 +363,11 @@
     </div>
   </div>
 
-  <!-- Watch Player Modal -->
+  <!-- PERFECT FULL-FRAME IFRAME MODAL -->
   <div id="watch-modal" class="fixed inset-0 z-[85] hidden items-center justify-center p-4 sm:p-6" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Watch movie">
     <div id="watch-modal-backdrop" class="modal-backdrop absolute inset-0 bg-black/80"></div>
     <div id="watch-modal-panel" class="modal-panel relative glass-strong w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl shadow-black/60 flex flex-col max-h-[92vh]">
+      
       <div class="flex items-center justify-between gap-4 px-5 py-4 border-b border-white/5 shrink-0">
         <div class="min-w-0">
           <p class="text-[10px] uppercase tracking-widest text-indigo-400/80 mb-0.5">Now Playing</p>
@@ -401,62 +383,27 @@
           </button>
         </div>
       </div>
-
-      <!-- 🔥 NEW PREMIUM CUSTOM PLAYER START 🔥 -->
-      <div class="relative aspect-video bg-black shrink-0 premium-player-container" id="videoContainer">
-          <!-- Custom Logo -->
-          <img src="https://via.placeholder.com/100x40/ff4757/ffffff?text=FLIXPRO" alt="Brand Logo" class="player-watermark">
-
-          <!-- Center Play Button -->
-          <div class="center-play-btn" id="centerPlayBtn">
-              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-
-          <!-- Main Video Element -->
-          <video id="mainVideo" poster="https://image.tmdb.org/t/p/original/8rpDcsfLJypbO6vtecsmEZz40V.jpg">
-              <!-- Ekhane backend theke asha raw mp4/m3u8 bosbe -->
-              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-          </video>
-
-          <!-- Player Controls -->
-          <div class="player-controls" id="playerControls">
-              <div class="progress-area">
-                  <div class="progress-bar">
-                    <div class="progress-filled"></div>
-                  </div>
-              </div>
-
-              <div class="controls-main">
-                  <div class="controls-left">
-                      <button class="control-btn" id="playPauseBtn">
-                          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                      </button>
-                      <button class="control-btn">
-                          <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-                      </button>
-                      <div class="time-display">00:00 / 00:00</div>
-                  </div>
-
-                  <div class="controls-right">
-                      <button class="control-btn">
-                          <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-                      </button>
-                      <button class="control-btn" id="fullScreenBtn">
-                          <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-                      </button>
-                  </div>
-              </div>
-          </div>
+      
+      <div class="relative w-full aspect-video bg-black shrink-0">
+        <iframe
+          id="watch-player"
+          class="absolute inset-0 w-full h-full border-0"
+          src=""
+          title="Movie player"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          allowfullscreen="true"
+          webkitallowfullscreen="true"
+          mozallowfullscreen="true"
+          loading="lazy"
+        ></iframe>
       </div>
-      <!-- 🔥 NEW PREMIUM CUSTOM PLAYER END 🔥 -->
+
     </div>
   </div>
 
-  <!-- Movie Detail Modal -->
   <div id="movie-modal" class="fixed inset-0 z-[80] hidden items-end sm:items-center justify-center p-0 sm:p-4" aria-hidden="true" role="dialog" aria-modal="true">
     <div id="modal-backdrop" class="modal-backdrop absolute inset-0 bg-black/70"></div>
     <div id="modal-panel" class="modal-panel relative glass-strong w-full sm:max-w-3xl max-h-[92vh] sm:rounded-3xl rounded-t-3xl overflow-hidden flex flex-col shadow-2xl shadow-black/50">
-      <!-- Backdrop hero -->
       <div id="modal-hero" class="relative h-48 sm:h-56 shrink-0 overflow-hidden">
         <img id="modal-backdrop-img" src="" alt="" class="absolute inset-0 w-full h-full object-cover scale-105" />
         <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f19] via-[#0b0f19]/60 to-transparent"></div>
@@ -489,7 +436,6 @@
 
         <p id="modal-overview" class="text-sm text-white/60 leading-relaxed mt-5 mb-6"></p>
 
-        <!-- Trailer -->
         <div id="modal-trailer-section" class="mb-6 hidden">
           <h3 class="text-sm font-semibold text-white/80 mb-3 uppercase tracking-wider">Trailer</h3>
           <div class="relative aspect-video rounded-xl overflow-hidden glass">
@@ -497,7 +443,6 @@
           </div>
         </div>
 
-        <!-- Where to Watch -->
         <div id="modal-providers-section" class="mb-4">
           <h3 class="text-sm font-semibold text-white/80 mb-3 uppercase tracking-wider">Where to Watch</h3>
           <div id="modal-providers" class="flex flex-wrap gap-2"></div>
@@ -507,7 +452,6 @@
     </div>
   </div>
 
-  <!-- Watchlist Drawer -->
   <div id="watchlist-drawer" class="fixed inset-y-0 right-0 z-[70] w-full sm:w-96 translate-x-full transition-transform duration-300 ease-out glass-strong border-l border-white/5 shadow-2xl flex flex-col">
     <div class="flex items-center justify-between p-5 border-b border-white/5">
       <h3 class="font-semibold">My Watchlist</h3>
@@ -520,20 +464,16 @@
   </div>
   <div id="watchlist-overlay" class="fixed inset-0 z-[65] bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"></div>
 
-  <!-- API Key Notice (shown if key missing) -->
   <div id="api-notice" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 hidden max-w-md w-[calc(100%-2rem)] glass-strong rounded-2xl p-4 text-center text-sm border border-amber-500/30 shadow-xl">
     <p class="text-amber-300 font-medium mb-1">TMDB API Key Required</p>
     <p class="text-white/50 text-xs">Set your key in <code class="text-indigo-300">script.js</code> → <code class="text-indigo-300">TMDB_API_KEY</code></p>
   </div>
 
-  <!-- Firebase v8 Libraries -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-  <!-- Main Flixrel Script -->
   <script src="script.js"></script>
 
-  <!-- Firebase Connection & Fetch Script -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyC149Y2CR46kYH2StZCJXc-87BP9EroIcg",
