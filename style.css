@@ -1,0 +1,200 @@
+:root {
+    --primary-color: #e50914; /* Netflix Red style, tumi chaile change korte paro */
+    --bg-overlay: rgba(0, 0, 0, 0.7);
+}
+
+body {
+    background-color: #111; /* Website er dark background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Container Setup */
+.premium-player-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px; /* Desktop width */
+    aspect-ratio: 16 / 9; /* Standard Movie Ratio */
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+    group: hover; /* For hover detection */
+}
+
+/* The Video Element */
+.premium-player-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Eta video ke stretch na kore full frame e fit kore */
+    cursor: pointer;
+}
+
+/* Custom Watermark Logo */
+.player-watermark {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    width: 90px;
+    opacity: 0.6; /* Ektu halka kora jate video disturb na kore */
+    z-index: 10;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.premium-player-container:hover .player-watermark {
+    opacity: 1; /* Hover korle clear hobe */
+}
+
+/* Center Play Button (Animated) */
+.center-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    background: var(--bg-overlay);
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px); /* Glass effect */
+}
+
+.center-play-btn svg {
+    fill: white;
+    width: 35px;
+    height: 35px;
+    margin-left: 5px;
+}
+
+.center-play-btn:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    background: var(--primary-color);
+}
+
+.center-play-btn.hidden {
+    display: none;
+}
+
+/* Controls Bar */
+.player-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 30px 20px 15px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0; /* By default hidden thakbe */
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    box-sizing: border-box;
+}
+
+.premium-player-container:hover .player-controls {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Progress Bar */
+.progress-area {
+    width: 100%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+    transition: height 0.2s ease;
+}
+
+.progress-area:hover {
+    height: 8px; /* Hover korle mota hobe */
+}
+
+.progress-filled {
+    height: 100%;
+    background: var(--primary-color);
+    width: 30%; /* Dummy progress */
+    border-radius: 5px;
+    position: relative;
+}
+
+.progress-filled::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.progress-area:hover .progress-filled::after {
+    opacity: 1;
+}
+
+/* Buttons and Layout */
+.controls-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.controls-left, .controls-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.control-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.control-btn:hover {
+    transform: scale(1.1);
+}
+
+.control-btn svg {
+    fill: white;
+    width: 24px;
+    height: 24px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.control-btn:hover svg {
+    opacity: 1;
+}
+
+.time-display {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
