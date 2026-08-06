@@ -5,7 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flixrel — Discover Your Next Obsession</title>
   <meta name="description" content="Flirel — Ultra-modern movie discovery powered by TMDB and Firebase." />
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Plyr & HLS.js for Raw Video Playback -->
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -363,39 +371,32 @@
     </div>
   </div>
 
-  <!-- PERFECT FULL-FRAME IFRAME MODAL -->
+  <!-- 🔥 PREMIUM RAW VIDEO PLAYER & DOWNLOAD 🔥 -->
   <div id="watch-modal" class="fixed inset-0 z-[85] hidden items-center justify-center p-4 sm:p-6" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Watch movie">
     <div id="watch-modal-backdrop" class="modal-backdrop absolute inset-0 bg-black/80"></div>
     <div id="watch-modal-panel" class="modal-panel relative glass-strong w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl shadow-black/60 flex flex-col max-h-[92vh]">
       
+      <!-- Top Bar -->
       <div class="flex items-center justify-between gap-4 px-5 py-4 border-b border-white/5 shrink-0">
         <div class="min-w-0">
           <p class="text-[10px] uppercase tracking-widest text-indigo-400/80 mb-0.5">Now Playing</p>
           <h2 id="watch-modal-title" class="text-lg sm:text-xl font-bold truncate"></h2>
         </div>
         <div class="flex items-center gap-2 shrink-0">
-          <button id="watch-modal-details" type="button" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl glass text-xs text-white/70 hover:text-white transition-all duration-200">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            Details
-          </button>
+          <!-- Download Button (Hidden by default, shows when API returns link) -->
+          <a id="download-btn" href="#" target="_blank" class="hidden items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold shadow-lg shadow-rose-500/20 transition-all duration-200">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Download
+          </a>
           <button id="watch-modal-close" type="button" aria-label="Close player" class="p-2 rounded-full glass hover:bg-white/10 transition-all duration-200 hover:rotate-90">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
       </div>
       
+      <!-- Video Player Container -->
       <div class="relative w-full aspect-video bg-black shrink-0">
-        <iframe
-          id="watch-player"
-          class="absolute inset-0 w-full h-full border-0"
-          src=""
-          title="Movie player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          allowfullscreen="true"
-          webkitallowfullscreen="true"
-          mozallowfullscreen="true"
-          loading="lazy"
-        ></iframe>
+        <video id="watch-player" playsinline controls class="w-full h-full"></video>
       </div>
 
     </div>
