@@ -172,15 +172,6 @@
       opacity: 0.55;
     }
 
-    .card-preview {
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
-
-    .card-preview.active {
-      opacity: 1;
-    }
-
     .wheel-pointer {
       filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.6));
     }
@@ -210,18 +201,6 @@
 
     .modal-panel {
       animation: modalIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .wheel-segment {
-      transform-origin: center center;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
     }
   </style>
   <link rel="stylesheet" href="style.css">
@@ -317,9 +296,12 @@
       </div>
     </div>
 
+    <!-- 🔥 FIREBASE VIRAL SECTION GRID 🔥 -->
     <div class="mt-16 pt-8 border-t border-white/10">
-      <h2 class="text-2xl text-white font-bold mb-5">Latest Movies (Firebase Database)</h2>
-      <div id="movies-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <h2 class="text-2xl text-white font-bold mb-5 flex items-center gap-2">
+        <span>🔥 Viral Section & Manual Uploads</span>
+      </h2>
+      <div id="movies-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
       </div>
     </div>
   </section>
@@ -366,7 +348,7 @@
     </div>
   </div>
 
-  <!-- CLEAN IFRAME PLAYER FOR MOBILE FULLSCREEN -->
+  <!-- 🔥 TMDB IFRAME PLAYER MODAL (STANDARD) 🔥 -->
   <div id="watch-modal" class="fixed inset-0 z-[85] hidden items-center justify-center p-4 sm:p-6" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Watch movie">
     <div id="watch-modal-backdrop" class="modal-backdrop absolute inset-0 bg-black/80"></div>
     <div id="watch-modal-panel" class="modal-panel relative glass-strong w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl shadow-black/60 flex flex-col max-h-[92vh]">
@@ -402,6 +384,7 @@
     </div>
   </div>
 
+  <!-- 🔥 TMDB MOVIE DETAILS MODAL 🔥 -->
   <div id="movie-modal" class="fixed inset-0 z-[80] hidden items-end sm:items-center justify-center p-0 sm:p-4" aria-hidden="true" role="dialog" aria-modal="true">
     <div id="modal-backdrop" class="modal-backdrop absolute inset-0 bg-black/70"></div>
     <div id="modal-panel" class="modal-panel relative glass-strong w-full sm:max-w-3xl max-h-[92vh] sm:rounded-3xl rounded-t-3xl overflow-hidden flex flex-col shadow-2xl shadow-black/50">
@@ -470,11 +453,48 @@
     <p class="text-white/50 text-xs">Set your key in <code class="text-indigo-300">script.js</code> → <code class="text-indigo-300">TMDB_API_KEY</code></p>
   </div>
 
+  <!-- 🔥 VIRAL SECTION NATIVE VIDEO & DOWNLOAD MODAL 🔥 -->
+  <div id="viral-watch-modal" class="fixed inset-0 z-[95] hidden items-center justify-center p-0 bg-black/95" aria-hidden="true" role="dialog" aria-modal="true">
+    
+    <div class="absolute top-0 inset-x-0 z-50 flex items-center justify-between p-4 bg-gradient-to-b from-black/90 to-transparent">
+      <h2 id="viral-modal-title" class="text-white font-bold text-base sm:text-lg truncate max-w-[60%]">Video Title</h2>
+      
+      <div class="flex items-center gap-3">
+        <!-- Desktop Download Button -->
+        <a id="viral-download-btn" href="#" target="_blank" download class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold text-xs sm:text-sm transition shadow-lg shadow-indigo-600/30">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Download
+        </a>
+        <!-- Mobile Download Button -->
+        <a id="viral-download-icon-btn" href="#" target="_blank" download class="sm:hidden p-2 rounded-full glass text-indigo-400 hover:bg-white/10 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        </a>
+
+        <button id="viral-modal-close" type="button" aria-label="Close" class="p-2 rounded-full glass text-white hover:bg-white/10 transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Native Player -->
+    <div class="relative w-full h-full flex items-center justify-center">
+      <video
+        id="viral-video-player"
+        class="w-full h-full object-contain bg-black"
+        controls
+        playsinline
+        webkit-playsinline
+      ></video>
+    </div>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
+  <!-- External Script File (Keeps TMDB functionality running) -->
   <script src="script.js"></script>
 
+  <!-- Firebase Scripts & Viral Native Player Logic -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyC149Y2CR46kYH2StZCJXc-87BP9EroIcg",
@@ -487,31 +507,78 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    db.collection("movies").orderBy("createdAt", "desc").get().then((snapshot) => {
+    const viralModal = document.getElementById('viral-watch-modal');
+    const viralVideo = document.getElementById('viral-video-player');
+    const viralTitle = document.getElementById('viral-modal-title');
+    const viralDownloadBtn = document.getElementById('viral-download-btn');
+    const viralDownloadIconBtn = document.getElementById('viral-download-icon-btn');
+    const viralModalClose = document.getElementById('viral-modal-close');
+
+    function openViralModal(title, videoUrl) {
+      if (!videoUrl) {
+        alert("Video link is missing!");
+        return;
+      }
+
+      viralTitle.textContent = title || 'Viral Video';
+      viralVideo.src = videoUrl;
+      
+      viralDownloadBtn.href = videoUrl;
+      viralDownloadBtn.classList.remove('hidden');
+      viralDownloadIconBtn.href = videoUrl;
+
+      viralModal.classList.remove('hidden');
+      viralModal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+
+      viralVideo.play().catch(err => {
+        console.log("Autoplay blocked, waiting for user click.");
+      });
+    }
+
+    viralModalClose.addEventListener('click', () => {
+      viralVideo.pause();
+      viralVideo.src = '';
+      viralModal.classList.add('hidden');
+      viralModal.classList.remove('flex');
+      document.body.style.overflow = '';
+    });
+
+    db.collection("episodes").orderBy("createdAt", "desc").get().then((snapshot) => {
       const container = document.getElementById("movies-grid");
       if(!container) return;
       container.innerHTML = "";
       
       if(snapshot.empty) {
-        container.innerHTML = "<p class='text-white col-span-full text-center py-4'>কোনো মুভি পাওয়া যায়নি।</p>";
+        container.innerHTML = "<p class='text-white col-span-full text-center py-4'>কোনো মুভি বা ভিডিও পাওয়া যায়নি।</p>";
         return;
       }
 
       snapshot.forEach(doc => {
         const movie = doc.data();
-        container.innerHTML += `
-          <div class="bg-slate-800/80 border border-white/10 p-3 rounded-xl shadow-lg flex flex-col justify-between">
-            <div>
-              <img src="${movie.thumbnailUrl}" alt="${movie.title}" class="w-full h-60 object-cover rounded-lg mb-3">
-              <h3 class="text-white font-bold text-lg truncate">${movie.title}</h3>
-              <p class="text-slate-400 text-sm mb-3">${movie.releaseYear || ''} • <span class="uppercase">${movie.type || ''}</span></p>
-            </div>
-            <a href="watch-movie.html?id=${doc.id}" class="block text-center bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-semibold transition">Watch Now</a>
+        const videoLink = movie.embedUrl || movie.videoUrl || '';
+        const title = movie.series || movie.title || 'Untitled';
+        const poster = movie.posterUrl || movie.thumbnailUrl || '';
+
+        const card = document.createElement('div');
+        card.className = "bg-slate-800/80 border border-white/10 p-3 rounded-xl shadow-lg flex flex-col justify-between cursor-pointer group";
+        card.innerHTML = `
+          <div>
+            <img src="${poster}" alt="${title}" class="w-full h-60 object-cover rounded-lg mb-3 group-hover:scale-[1.02] transition">
+            <h3 class="text-white font-bold text-lg truncate">${title}</h3>
+            <p class="text-slate-400 text-sm mb-3">${movie.releaseYear || ''} • <span class="uppercase">${movie.type || 'Viral'}</span></p>
           </div>
+          <button type="button" class="block w-full text-center bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-semibold transition">Watch Now</button>
         `;
+
+        card.addEventListener('click', () => {
+          openViralModal(title, videoLink);
+        });
+
+        container.appendChild(card);
       });
     }).catch(error => {
-      console.error("Error fetching movies from Firestore:", error);
+      console.error("Error fetching from Firestore:", error);
     });
   </script>
 
