@@ -1,0 +1,12 @@
+{
+  "viral_01": {
+    "title": "Super Hit Movie 2026",
+    "stream_url": "https://cdn.jsdelivr.net/gh/ashikkhan9/flixrel_movie@main/index.m3u8",
+    "download_url": "https://dood.re/d/your_doodstream_link"
+  },
+  "viral_02": {
+    "title": "Another Blockbuster",
+    "stream_url": "https://cdn.jsdelivr.net/gh/ashikkhan9/another_movie@main/index.m3u8",
+    "download_url": "https://dood.re/d/another_link"
+  }
+}
