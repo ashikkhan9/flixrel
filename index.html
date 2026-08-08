@@ -460,12 +460,10 @@
       <h2 id="viral-modal-title" class="text-white font-bold text-base sm:text-lg truncate max-w-[60%]">Video Title</h2>
       
       <div class="flex items-center gap-3">
-        <!-- Desktop Download Button -->
         <a id="viral-download-btn" href="#" target="_blank" download class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold text-xs sm:text-sm transition shadow-lg shadow-indigo-600/30">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
           Download
         </a>
-        <!-- Mobile Download Button -->
         <a id="viral-download-icon-btn" href="#" target="_blank" download class="sm:hidden p-2 rounded-full glass text-indigo-400 hover:bg-white/10 transition">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
         </a>
@@ -491,7 +489,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-  <!-- External Script File (Keeps TMDB functionality running) -->
+  <!-- External Script File -->
   <script src="script.js"></script>
 
   <!-- Firebase Scripts & Viral Native Player Logic -->
@@ -544,7 +542,8 @@
       document.body.style.overflow = '';
     });
 
-    db.collection("episodes").orderBy("createdAt", "desc").get().then((snapshot) => {
+    // 🔴 ঠিক এই লাইনটাতেই চেঞ্জ করে 'movies' করে দিয়েছি
+    db.collection("movies").orderBy("createdAt", "desc").get().then((snapshot) => {
       const container = document.getElementById("movies-grid");
       if(!container) return;
       container.innerHTML = "";
@@ -571,7 +570,6 @@
           <button type="button" class="block w-full text-center bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-semibold transition">Watch Now</button>
         `;
 
-        // 🔴 শুধুমাত্র এই জায়গাটা চেঞ্জ করা হয়েছে যাতে নতুন watch.html পেজে যায়
         card.addEventListener('click', () => {
           window.location.href = `watch.html?id=${doc.id}`;
         });
