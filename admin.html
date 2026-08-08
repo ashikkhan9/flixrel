@@ -3,162 +3,359 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flixnest Admin - Master Panel</title>
+  <title>Flixnest Admin - Master Panel PRO</title>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
   <!-- Firebase v8 CDNs -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  
+  <!-- SweetAlert2 for Premium Popups -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
-    body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-    .tab-active { background-color: #4f46e5; color: white; border-color: #4f46e5; }
-    .input-field { width: 100%; padding: 10px 15px; border-radius: 8px; background: #1e293b; border: 1px solid #334155; color: white; margin-top: 5px; outline: none; }
-    .input-field:focus { border-color: #6366f1; }
-    .btn-primary { background: #6366f1; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; width: 100%; }
-    .btn-primary:hover { background: #4f46e5; }
+    body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+
+    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); }
+    .glass-modal { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(99, 102, 241, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    
+    .tab-active { background: linear-gradient(90deg, #4f46e5, #6366f1); color: white; border-color: #4f46e5; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); }
+    
+    .input-field { width: 100%; padding: 12px 16px; border-radius: 8px; background: #1e293b; border: 1px solid #334155; color: white; margin-top: 6px; outline: none; transition: all 0.3s ease; }
+    .input-field:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); background: #26354a; }
+    
+    .btn-primary { background: linear-gradient(135deg, #4f46e5, #6366f1); color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; width: 100%; border: none; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-success { background: linear-gradient(135deg, #059669, #10b981); color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; width: 100%; border: none; }
+    .btn-success:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4); }
+
+    .search-bar { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 8px 16px 8px 40px; color: white; width: 300px; outline: none; transition: 0.3s; }
+    .search-bar:focus { border-color: #6366f1; width: 350px; }
+
+    /* Modal Animation */
+    @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95) translateY(-20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal-animate { animation: modalFadeIn 0.3s ease-out forwards; }
   </style>
 </head>
 <body class="min-h-screen flex">
 
-  <!-- Sidebar -->
-  <aside class="w-64 glass h-screen p-5 fixed border-r border-slate-700 flex flex-col gap-2">
-    <div class="text-2xl font-bold text-indigo-400 mb-8 flex items-center gap-2">
-      🎥 Flixnest Admin
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="w-64 glass h-screen p-5 fixed border-r border-slate-700 flex flex-col gap-2 z-40">
+    <div class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 mb-8 flex items-center gap-3">
+      <i class="fa-solid fa-film text-indigo-500"></i> Flixnest PRO
     </div>
-    <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn tab-active text-left px-4 py-3 rounded-lg font-medium transition hover:bg-slate-700">📊 Dashboard</button>
-    <button onclick="switchTab('uploadMovie')" id="btn-uploadMovie" class="tab-btn text-left px-4 py-3 rounded-lg font-medium transition hover:bg-slate-700">🎬 Upload Movie/Natok</button>
-    <button onclick="switchTab('uploadSeries')" id="btn-uploadSeries" class="tab-btn text-left px-4 py-3 rounded-lg font-medium transition hover:bg-slate-700">📺 Manage Series</button>
-    <button onclick="switchTab('manage')" id="btn-manage" class="tab-btn text-left px-4 py-3 rounded-lg font-medium transition hover:bg-slate-700">⚙️ Manage Content</button>
+    
+    <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn tab-active text-left px-4 py-3 rounded-xl font-semibold transition flex items-center gap-3 hover:bg-slate-700/50">
+      <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+    </button>
+    <button onclick="switchTab('uploadMovie')" id="btn-uploadMovie" class="tab-btn text-left px-4 py-3 rounded-xl font-semibold transition flex items-center gap-3 hover:bg-slate-700/50">
+      <i class="fa-solid fa-upload w-5 text-center"></i> Upload Content
+    </button>
+    <button onclick="switchTab('uploadSeries')" id="btn-uploadSeries" class="tab-btn text-left px-4 py-3 rounded-xl font-semibold transition flex items-center gap-3 hover:bg-slate-700/50">
+      <i class="fa-solid fa-tv w-5 text-center"></i> Manage Series
+    </button>
+    <button onclick="switchTab('manage')" id="btn-manage" class="tab-btn text-left px-4 py-3 rounded-xl font-semibold transition flex items-center gap-3 hover:bg-slate-700/50">
+      <i class="fa-solid fa-folder-tree w-5 text-center"></i> Edit & Manage
+    </button>
+
+    <div class="mt-auto pt-4 border-t border-slate-700">
+      <div class="flex items-center gap-3 px-2">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-white shadow-lg">
+          A
+        </div>
+        <div>
+          <p class="text-sm font-bold text-white">Super Admin</p>
+          <p class="text-xs text-emerald-400">● Online</p>
+        </div>
+      </div>
+    </div>
   </aside>
 
-  <!-- Main Content -->
+  <!-- ================= MAIN CONTENT ================= -->
   <main class="ml-64 p-8 w-full">
     
-    <!-- Toast Notification -->
-    <div id="toast" class="hidden fixed top-5 right-5 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg font-bold transition-all z-50">
-      Message goes here
+    <!-- Toast Notification (Top Right) -->
+    <div id="toast" class="hidden fixed top-5 right-5 px-6 py-4 rounded-xl shadow-2xl font-bold transition-all z-50 flex items-center gap-3 border">
+      <i id="toast-icon" class="fa-solid fa-circle-check text-xl"></i>
+      <span id="toast-msg">Message goes here</span>
     </div>
 
     <!-- 1. Dashboard Tab -->
     <section id="dashboard" class="tab-content block">
-      <h2 class="text-3xl font-bold mb-6 border-b border-slate-700 pb-2">Dashboard Overview</h2>
-      <div class="grid grid-cols-3 gap-6">
-        <div class="glass p-6 rounded-xl text-center">
-          <h3 class="text-slate-400 text-lg">Total Movies/Natok</h3>
-          <p id="stat-movies" class="text-4xl font-bold text-indigo-400 mt-2">...</p>
+      <div class="flex justify-between items-end mb-8 border-b border-slate-700 pb-4">
+        <div>
+          <h2 class="text-4xl font-black text-white">System Dashboard</h2>
+          <p class="text-slate-400 mt-1">Welcome back, here is your content overview.</p>
         </div>
-        <div class="glass p-6 rounded-xl text-center">
-          <h3 class="text-slate-400 text-lg">Total Series</h3>
-          <p id="stat-series" class="text-4xl font-bold text-emerald-400 mt-2">...</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass p-8 rounded-2xl relative overflow-hidden group">
+          <div class="absolute -right-6 -top-6 text-indigo-500/10 group-hover:text-indigo-500/20 transition-colors text-9xl">
+            <i class="fa-solid fa-video"></i>
+          </div>
+          <h3 class="text-slate-400 text-lg font-medium">Total Movies/Natok</h3>
+          <p id="stat-movies" class="text-5xl font-black text-indigo-400 mt-2">0</p>
+        </div>
+        <div class="glass p-8 rounded-2xl relative overflow-hidden group">
+          <div class="absolute -right-6 -top-6 text-emerald-500/10 group-hover:text-emerald-500/20 transition-colors text-9xl">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <h3 class="text-slate-400 text-lg font-medium">Total Series</h3>
+          <p id="stat-series" class="text-5xl font-black text-emerald-400 mt-2">0</p>
+        </div>
+        <div class="glass p-8 rounded-2xl relative overflow-hidden group border-indigo-500/30">
+          <div class="absolute -right-6 -top-6 text-purple-500/10 group-hover:text-purple-500/20 transition-colors text-9xl">
+            <i class="fa-solid fa-server"></i>
+          </div>
+          <h3 class="text-slate-400 text-lg font-medium">Database Status</h3>
+          <p class="text-2xl font-bold text-purple-400 mt-4 flex items-center gap-2">
+            <i class="fa-solid fa-link"></i> Connected
+          </p>
         </div>
       </div>
     </section>
 
     <!-- 2. Upload Movie/Natok Tab -->
-    <section id="uploadMovie" class="tab-content hidden max-w-2xl">
-      <h2 class="text-3xl font-bold mb-6 border-b border-slate-700 pb-2">Upload Movie or Natok</h2>
-      <form id="movieForm" class="glass p-6 rounded-xl space-y-4" onsubmit="handleMovieSubmit(event)">
-        <div>
-          <label class="text-sm font-semibold text-slate-300">Title</label>
-          <input type="text" id="m-title" class="input-field" placeholder="e.g. Inception" required>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
+    <section id="uploadMovie" class="tab-content hidden">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl font-bold mb-6 border-b border-slate-700 pb-2 flex items-center gap-3">
+          <i class="fa-solid fa-cloud-arrow-up text-indigo-500"></i> Upload Movie or Natok
+        </h2>
+        <form id="movieForm" class="glass p-8 rounded-2xl space-y-5" onsubmit="handleMovieSubmit(event)">
           <div>
-            <label class="text-sm font-semibold text-slate-300">Type</label>
-            <select id="m-type" class="input-field">
-              <option value="movie">Movie</option>
-              <option value="natok">Natok</option>
-            </select>
+            <label class="text-sm font-semibold text-slate-300">Title <span class="text-red-400">*</span></label>
+            <input type="text" id="m-title" class="input-field" placeholder="e.g. Inception / Viral Video" required>
           </div>
-          <div>
-            <label class="text-sm font-semibold text-slate-300">Release Year</label>
-            <input type="number" id="m-year" class="input-field" placeholder="2026" required>
-          </div>
-        </div>
-        <div>
-          <label class="text-sm font-semibold text-slate-300">Thumbnail URL (Poster)</label>
-          <input type="url" id="m-poster" class="input-field" placeholder="https://..." required>
-        </div>
-        <div>
-          <label class="text-sm font-semibold text-slate-300">Video Embed URL</label>
-          <input type="url" id="m-video" class="input-field" placeholder="https://vidsrc.com/..." required>
-        </div>
-        <button type="submit" id="btn-m-submit" class="btn-primary mt-4">Upload Content</button>
-      </form>
-    </section>
-
-    <!-- 3. Manage Series Tab (Create Series & Add Episodes) -->
-    <section id="uploadSeries" class="tab-content hidden grid grid-cols-2 gap-8">
-      <!-- Create Series -->
-      <div>
-        <h2 class="text-2xl font-bold mb-4 border-b border-slate-700 pb-2">1. Create New Series</h2>
-        <form id="seriesForm" class="glass p-6 rounded-xl space-y-4" onsubmit="handleSeriesSubmit(event)">
-          <div>
-            <label class="text-sm font-semibold text-slate-300">Series Title</label>
-            <input type="text" id="s-title" class="input-field" placeholder="e.g. CID" required>
-          </div>
-          <div>
-            <label class="text-sm font-semibold text-slate-300">Series Poster URL</label>
-            <input type="url" id="s-poster" class="input-field" placeholder="https://..." required>
-          </div>
-          <button type="submit" id="btn-s-submit" class="btn-primary">Create Series</button>
-        </form>
-      </div>
-
-      <!-- Add Episode -->
-      <div>
-        <h2 class="text-2xl font-bold mb-4 border-b border-slate-700 pb-2">2. Add Episode to Series</h2>
-        <form id="episodeForm" class="glass p-6 rounded-xl space-y-4" onsubmit="handleEpisodeSubmit(event)">
-          <div>
-            <label class="text-sm font-semibold text-slate-300">Select Series</label>
-            <select id="ep-series" class="input-field" required>
-              <option value="">Loading series...</option>
-            </select>
-          </div>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-2 gap-6">
             <div>
-              <label class="text-sm font-semibold text-slate-300">Season Number</label>
-              <input type="number" id="ep-season" class="input-field" value="1" required>
+              <label class="text-sm font-semibold text-slate-300">Category Type <span class="text-red-400">*</span></label>
+              <select id="m-type" class="input-field cursor-pointer">
+                <option value="movie">Movie</option>
+                <option value="natok">Natok</option>
+                <option value="viral">Viral Section</option>
+              </select>
             </div>
             <div>
-              <label class="text-sm font-semibold text-slate-300">Episode Number</label>
-              <input type="number" id="ep-number" class="input-field" value="1" required>
+              <label class="text-sm font-semibold text-slate-300">Release Year <span class="text-red-400">*</span></label>
+              <input type="number" id="m-year" class="input-field" placeholder="2026" required>
             </div>
           </div>
           <div>
-            <label class="text-sm font-semibold text-slate-300">Episode Title</label>
-            <input type="text" id="ep-title" class="input-field" placeholder="e.g. The Beginning" required>
+            <label class="text-sm font-semibold text-slate-300">Thumbnail / Poster URL <span class="text-red-400">*</span></label>
+            <input type="url" id="m-poster" class="input-field" placeholder="https://..." required>
           </div>
           <div>
-            <label class="text-sm font-semibold text-slate-300">Video Embed URL</label>
-            <input type="url" id="ep-video" class="input-field" placeholder="https://..." required>
+            <label class="text-sm font-semibold text-slate-300">Video Embed URL (M3U8 / MP4) <span class="text-red-400">*</span></label>
+            <input type="url" id="m-video" class="input-field" placeholder="https://cdn.jsdelivr.net/gh/..." required>
           </div>
-          <button type="submit" id="btn-ep-submit" class="btn-primary bg-emerald-600 hover:bg-emerald-500">Upload Episode</button>
+          <!-- 🔥 NEW: DOWNLOAD LINK OPTION 🔥 -->
+          <div>
+            <label class="text-sm font-semibold text-slate-300">Download URL (Optional)</label>
+            <input type="url" id="m-download" class="input-field border-emerald-500/30 focus:border-emerald-500" placeholder="https://dood.re/... (Leave blank to use Video URL for download)">
+            <p class="text-xs text-slate-400 mt-1"><i class="fa-solid fa-circle-info"></i> Direct .mp4 or third-party download link.</p>
+          </div>
+          <button type="submit" id="btn-m-submit" class="btn-primary mt-6 text-lg">
+            <i class="fa-solid fa-paper-plane mr-2"></i> Publish Content
+          </button>
         </form>
       </div>
     </section>
 
-    <!-- 4. Manage Content Tab -->
+    <!-- 3. Manage Series Tab -->
+    <section id="uploadSeries" class="tab-content hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Create Series -->
+        <div>
+          <h2 class="text-2xl font-bold mb-4 border-b border-slate-700 pb-2 flex items-center gap-2">
+            <i class="fa-solid fa-folder-plus text-emerald-500"></i> Create New Series
+          </h2>
+          <form id="seriesForm" class="glass p-6 rounded-2xl space-y-4" onsubmit="handleSeriesSubmit(event)">
+            <div>
+              <label class="text-sm font-semibold text-slate-300">Series Title</label>
+              <input type="text" id="s-title" class="input-field" placeholder="e.g. Breaking Bad" required>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-300">Series Poster URL</label>
+              <input type="url" id="s-poster" class="input-field" placeholder="https://..." required>
+            </div>
+            <button type="submit" id="btn-s-submit" class="btn-success mt-2">Create Series Folder</button>
+          </form>
+        </div>
+
+        <!-- Add Episode -->
+        <div>
+          <h2 class="text-2xl font-bold mb-4 border-b border-slate-700 pb-2 flex items-center gap-2">
+            <i class="fa-solid fa-video text-indigo-500"></i> Add Episode to Series
+          </h2>
+          <form id="episodeForm" class="glass p-6 rounded-2xl space-y-4" onsubmit="handleEpisodeSubmit(event)">
+            <div>
+              <label class="text-sm font-semibold text-slate-300">Select Series</label>
+              <select id="ep-series" class="input-field cursor-pointer" required>
+                <option value="">Loading series...</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm font-semibold text-slate-300">Season Number</label>
+                <input type="number" id="ep-season" class="input-field" value="1" required>
+              </div>
+              <div>
+                <label class="text-sm font-semibold text-slate-300">Episode Number</label>
+                <input type="number" id="ep-number" class="input-field" value="1" required>
+              </div>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-300">Episode Title</label>
+              <input type="text" id="ep-title" class="input-field" placeholder="e.g. Pilot" required>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-300">Video Embed URL</label>
+              <input type="url" id="ep-video" class="input-field" placeholder="https://..." required>
+            </div>
+            <!-- 🔥 NEW: EPISODE DOWNLOAD LINK 🔥 -->
+            <div>
+              <label class="text-sm font-semibold text-slate-300">Download URL (Optional)</label>
+              <input type="url" id="ep-download" class="input-field border-emerald-500/30" placeholder="https://...">
+            </div>
+            <button type="submit" id="btn-ep-submit" class="btn-primary mt-2">Upload Episode</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Manage Content Tab (With Edit Options) -->
     <section id="manage" class="tab-content hidden">
-      <h2 class="text-3xl font-bold mb-6 border-b border-slate-700 pb-2">Manage All Content</h2>
+      <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+        <h2 class="text-3xl font-bold flex items-center gap-3">
+          <i class="fa-solid fa-sliders text-indigo-500"></i> Manage Database
+        </h2>
+        
+        <!-- Live Search Bar -->
+        <div class="relative">
+          <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="searchBar" onkeyup="filterContent()" class="search-bar" placeholder="Search movies, natok...">
+        </div>
+      </div>
       
-      <h3 class="text-xl font-bold text-indigo-400 mb-3 mt-6">Movies & Natok</h3>
-      <div class="glass p-4 rounded-xl">
-        <ul id="manage-movies-list" class="space-y-3">
-          <li class="text-slate-400">Loading...</li>
-        </ul>
+      <!-- Movies Grid -->
+      <h3 class="text-xl font-bold text-indigo-400 mb-4 mt-2">Movies, Natok & Viral</h3>
+      <div class="glass p-6 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="text-slate-400 text-sm border-b border-slate-700">
+                <th class="pb-3 px-2">Poster</th>
+                <th class="pb-3 px-2">Title</th>
+                <th class="pb-3 px-2">Type & Year</th>
+                <th class="pb-3 px-2 text-right">Actions (Edit / Delete)</th>
+              </tr>
+            </thead>
+            <tbody id="manage-movies-list" class="divide-y divide-slate-800">
+              <tr><td colspan="4" class="py-4 text-center text-slate-500">Loading data...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <h3 class="text-xl font-bold text-emerald-400 mb-3 mt-8">Series</h3>
-      <div class="glass p-4 rounded-xl">
-        <ul id="manage-series-list" class="space-y-3">
-          <li class="text-slate-400">Loading...</li>
-        </ul>
+      <!-- Series Grid -->
+      <h3 class="text-xl font-bold text-emerald-400 mb-4 mt-10">Series Folders</h3>
+      <div class="glass p-6 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="text-slate-400 text-sm border-b border-slate-700">
+                <th class="pb-3 px-2">Poster</th>
+                <th class="pb-3 px-2">Series Name</th>
+                <th class="pb-3 px-2 text-right">Actions (Delete)</th>
+              </tr>
+            </thead>
+            <tbody id="manage-series-list" class="divide-y divide-slate-800">
+              <tr><td colspan="3" class="py-4 text-center text-slate-500">Loading data...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
   </main>
 
+  <!-- ================= EDIT MODAL (MOVIE/NATOK) ================= -->
+  <div id="editModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+    <div class="glass-modal w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl modal-animate flex flex-col max-h-[90vh]">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-slate-700 flex justify-between items-center bg-slate-800/50">
+        <h3 class="text-2xl font-bold text-indigo-400"><i class="fa-solid fa-pen-to-square"></i> Edit Content</h3>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-red-400 transition text-2xl leading-none">&times;</button>
+      </div>
+      
+      <!-- Body -->
+      <div class="p-6 overflow-y-auto">
+        <form id="editForm" class="space-y-4" onsubmit="submitEdit(event)">
+          <input type="hidden" id="edit-id">
+          
+          <div>
+            <label class="text-sm font-semibold text-slate-300">Title</label>
+            <input type="text" id="edit-title" class="input-field" required>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm font-semibold text-slate-300">Type</label>
+              <select id="edit-type" class="input-field">
+                <option value="movie">Movie</option>
+                <option value="natok">Natok</option>
+                <option value="viral">Viral Section</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-slate-300">Release Year</label>
+              <input type="number" id="edit-year" class="input-field" required>
+            </div>
+          </div>
+          
+          <div>
+            <label class="text-sm font-semibold text-slate-300">Thumbnail / Poster URL</label>
+            <div class="flex gap-4 items-center mt-2">
+              <img id="edit-poster-preview" src="" class="w-16 h-24 object-cover rounded border border-slate-600">
+              <input type="url" id="edit-poster" class="input-field flex-1" required oninput="document.getElementById('edit-poster-preview').src = this.value">
+            </div>
+          </div>
+          
+          <div>
+            <label class="text-sm font-semibold text-slate-300">Video Embed URL</label>
+            <input type="url" id="edit-video" class="input-field" required>
+          </div>
+          
+          <div>
+            <label class="text-sm font-semibold text-slate-300">Download URL</label>
+            <input type="url" id="edit-download" class="input-field">
+          </div>
+          
+          <div class="pt-4 border-t border-slate-700 flex justify-end gap-3 mt-6">
+            <button type="button" onclick="closeEditModal()" class="px-6 py-2 rounded-lg font-bold bg-slate-700 hover:bg-slate-600 transition">Cancel</button>
+            <button type="submit" id="btn-save-edit" class="px-6 py-2 rounded-lg font-bold bg-indigo-600 hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/30">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= FIREBASE & LOGIC SCRIPT ================= -->
   <script>
     // 1. Firebase Initialization
     const firebaseConfig = {
@@ -172,31 +369,47 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    // 2. UI Logic (Tab Switching & Toast)
+    // Global variable to store current movies for search filtering
+    let allMovies = [];
+
+    // 2. UI Logic (Tabs & Premium Toasts)
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(el => {
         el.classList.remove('tab-active');
-        el.classList.add('hover:bg-slate-700');
+        el.classList.add('hover:bg-slate-700/50');
       });
       document.getElementById(tabId).classList.remove('hidden');
       document.getElementById('btn-' + tabId).classList.add('tab-active');
-      document.getElementById('btn-' + tabId).classList.remove('hover:bg-slate-700');
+      document.getElementById('btn-' + tabId).classList.remove('hover:bg-slate-700/50');
     }
 
-    function showToast(msg, isError = false) {
+    function showToast(msg, type = 'success') {
       const toast = document.getElementById('toast');
-      toast.innerText = msg;
-      toast.className = `fixed top-5 right-5 px-6 py-3 rounded-lg shadow-lg font-bold transition-all z-50 ${isError ? 'bg-red-500' : 'bg-emerald-500'}`;
+      const icon = document.getElementById('toast-icon');
+      
+      toast.className = `fixed top-5 right-5 px-6 py-4 rounded-xl shadow-2xl font-bold transition-all z-[110] flex items-center gap-3 border ${
+        type === 'success' ? 'bg-emerald-900/90 border-emerald-500 text-emerald-100' : 
+        'bg-red-900/90 border-red-500 text-red-100'
+      }`;
+      
+      icon.className = type === 'success' ? 'fa-solid fa-circle-check text-2xl text-emerald-400' : 'fa-solid fa-circle-exclamation text-2xl text-red-400';
+      document.getElementById('toast-msg').innerText = msg;
+      
       toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3000);
+      toast.classList.add('translate-y-0', 'opacity-100');
+      
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3500);
     }
 
-    // 3. Form Submit - Movie/Natok
+    // 3. UPLOAD MOVIE / NATOK
     async function handleMovieSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-m-submit');
-      btn.innerText = "Uploading..."; btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Uploading...'; 
+      btn.disabled = true;
 
       const data = {
         title: document.getElementById('m-title').value,
@@ -204,20 +417,22 @@
         releaseYear: parseInt(document.getElementById('m-year').value),
         thumbnailUrl: document.getElementById('m-poster').value,
         videoUrl: document.getElementById('m-video').value,
+        downloadUrl: document.getElementById('m-download').value, // 🔥 NEW FIELD SAVED
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
       try {
         await db.collection("movies").add(data);
-        showToast("✅ Movie/Natok Uploaded Successfully!");
+        showToast("Content published successfully!");
         document.getElementById('movieForm').reset();
       } catch (error) {
-        showToast("❌ Error: " + error.message, true);
+        showToast(error.message, 'error');
       }
-      btn.innerText = "Upload Content"; btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> Publish Content'; 
+      btn.disabled = false;
     }
 
-    // 4. Form Submit - Create Series
+    // 4. CREATE SERIES FOLDER
     async function handleSeriesSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-s-submit');
@@ -232,15 +447,15 @@
 
       try {
         await db.collection("series").add(data);
-        showToast("✅ Series Created Successfully!");
+        showToast("Series created successfully!");
         document.getElementById('seriesForm').reset();
       } catch (error) {
-        showToast("❌ Error: " + error.message, true);
+        showToast(error.message, 'error');
       }
-      btn.innerText = "Create Series"; btn.disabled = false;
+      btn.innerText = "Create Series Folder"; btn.disabled = false;
     }
 
-    // 5. Form Submit - Add Episode
+    // 5. ADD EPISODE
     async function handleEpisodeSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-ep-submit');
@@ -252,60 +467,177 @@
         episodeNumber: parseInt(document.getElementById('ep-number').value),
         title: document.getElementById('ep-title').value,
         videoUrl: document.getElementById('ep-video').value,
+        downloadUrl: document.getElementById('ep-download').value, // 🔥 NEW EPISODE DOWNLOAD
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
       try {
-        // Using string formatting for nested structure: series/{id}/seasons/{s_num}/episodes
         await db.collection("series").doc(seriesId)
                 .collection("seasons").doc("season_"+seasonNum)
                 .collection("episodes").add(epData);
-        showToast("✅ Episode Uploaded Successfully!");
+        showToast("Episode uploaded successfully!");
         document.getElementById('episodeForm').reset();
-        document.getElementById('ep-series').value = seriesId; // keep series selected
+        document.getElementById('ep-series').value = seriesId; 
       } catch (error) {
-        showToast("❌ Error: " + error.message, true);
+        showToast(error.message, 'error');
       }
       btn.innerText = "Upload Episode"; btn.disabled = false;
     }
 
-    // 6. Delete Functions
-    async function deleteMovie(id) {
-      if(confirm("Are you sure you want to delete this?")) {
-        await db.collection("movies").doc(id).delete();
-        showToast("🗑️ Deleted Successfully!");
-      }
+    // 6. DELETE WITH SWEETALERT2 (PREMIUM WARNING)
+    function deleteMovie(id) {
+      Swal.fire({
+        title: 'Are you absolutely sure?',
+        text: "You won't be able to revert this! The content will be permanently deleted.",
+        icon: 'warning',
+        showCancelButton: true,
+        background: '#1e293b',
+        color: '#fff',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#4f46e5',
+        confirmButtonText: 'Yes, delete it!'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await db.collection("movies").doc(id).delete();
+            showToast("Content deleted permanently.");
+          } catch(err) {
+            showToast("Failed to delete.", 'error');
+          }
+        }
+      })
     }
     
-    async function deleteSeries(id) {
-      if(confirm("Delete this series? (Episodes will be orphaned unless using a Cloud Function)")) {
-        await db.collection("series").doc(id).delete();
-        showToast("🗑️ Series Deleted!");
-      }
+    function deleteSeries(id) {
+      Swal.fire({
+        title: 'Delete Entire Series?',
+        text: "This deletes the series wrapper. Cloud functions needed to wipe nested episodes automatically.",
+        icon: 'warning',
+        showCancelButton: true,
+        background: '#1e293b',
+        color: '#fff',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#4f46e5',
+        confirmButtonText: 'Delete Series'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await db.collection("series").doc(id).delete();
+            showToast("Series deleted.");
+          } catch(err) {
+            showToast("Failed to delete.", 'error');
+          }
+        }
+      })
     }
 
-    // 7. Realtime Listeners (Dashboard Stats & Manage Lists)
-    db.collection("movies").onSnapshot((snapshot) => {
+    // 7. EDIT SYSTEM (MODAL LOGIC)
+    function openEditModal(id) {
+      // Find movie from global array
+      const movie = allMovies.find(m => m.id === id);
+      if(!movie) return;
+
+      document.getElementById('edit-id').value = movie.id;
+      document.getElementById('edit-title').value = movie.title || '';
+      document.getElementById('edit-type').value = movie.type || 'movie';
+      document.getElementById('edit-year').value = movie.releaseYear || '';
+      document.getElementById('edit-poster').value = movie.thumbnailUrl || '';
+      document.getElementById('edit-poster-preview').src = movie.thumbnailUrl || '';
+      document.getElementById('edit-video').value = movie.videoUrl || '';
+      document.getElementById('edit-download').value = movie.downloadUrl || '';
+
+      const modal = document.getElementById('editModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeEditModal() {
+      const modal = document.getElementById('editModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    async function submitEdit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-edit');
+      btn.innerText = "Saving..."; btn.disabled = true;
+
+      const id = document.getElementById('edit-id').value;
+      const updatedData = {
+        title: document.getElementById('edit-title').value,
+        type: document.getElementById('edit-type').value,
+        releaseYear: parseInt(document.getElementById('edit-year').value),
+        thumbnailUrl: document.getElementById('edit-poster').value,
+        videoUrl: document.getElementById('edit-video').value,
+        downloadUrl: document.getElementById('edit-download').value,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        await db.collection("movies").doc(id).update(updatedData);
+        showToast("Changes saved successfully!");
+        closeEditModal();
+      } catch (error) {
+        showToast(error.message, 'error');
+      }
+      btn.innerText = "Save Changes"; btn.disabled = false;
+    }
+
+    // 8. LIVE SEARCH FILTER
+    function filterContent() {
+      const input = document.getElementById('searchBar').value.toLowerCase();
+      const rows = document.querySelectorAll('.movie-row');
+      
+      rows.forEach(row => {
+        const title = row.getAttribute('data-title').toLowerCase();
+        if (title.includes(input)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    // 9. REALTIME LISTENERS & RENDERING
+    db.collection("movies").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
       document.getElementById("stat-movies").innerText = snapshot.size;
       const list = document.getElementById("manage-movies-list");
       list.innerHTML = "";
+      allMovies = []; // Clear array
+
+      if(snapshot.empty) {
+        list.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-500">No content found.</td></tr>`;
+        return;
+      }
+
       snapshot.forEach(doc => {
         const d = doc.data();
+        d.id = doc.id;
+        allMovies.push(d); // Save to global array for search & edit
+
         list.innerHTML += `
-          <li class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
-            <div class="flex items-center gap-4">
-              <img src="${d.thumbnailUrl}" class="w-10 h-14 object-cover rounded">
-              <div>
-                <strong class="text-white">${d.title}</strong>
-                <span class="text-xs ml-2 bg-indigo-500 px-2 py-1 rounded">${d.type}</span>
-              </div>
-            </div>
-            <button onclick="deleteMovie('${doc.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-bold">Delete</button>
-          </li>`;
+          <tr class="hover:bg-slate-800/50 transition movie-row" data-title="${d.title}">
+            <td class="py-3 px-2">
+              <img src="${d.thumbnailUrl}" class="w-12 h-16 object-cover rounded shadow-lg border border-slate-700">
+            </td>
+            <td class="py-3 px-2 font-bold text-white text-lg">${d.title}</td>
+            <td class="py-3 px-2">
+              <span class="text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-1 rounded uppercase tracking-wide mr-2">${d.type}</span>
+              <span class="text-sm text-slate-400">${d.releaseYear || ''}</span>
+            </td>
+            <td class="py-3 px-2 text-right">
+              <button onclick="openEditModal('${doc.id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition mr-2 shadow-lg">
+                <i class="fa-solid fa-pen"></i> Edit
+              </button>
+              <button onclick="deleteMovie('${doc.id}')" class="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-lg">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>`;
       });
     });
 
-    db.collection("series").onSnapshot((snapshot) => {
+    db.collection("series").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
       document.getElementById("stat-series").innerText = snapshot.size;
       const selectBox = document.getElementById("ep-series");
       const list = document.getElementById("manage-series-list");
@@ -313,22 +645,27 @@
       selectBox.innerHTML = '<option value="">Select a Series...</option>';
       list.innerHTML = "";
 
+      if(snapshot.empty) {
+        list.innerHTML = `<tr><td colspan="3" class="py-4 text-center text-slate-500">No series found.</td></tr>`;
+        return;
+      }
+
       snapshot.forEach(doc => {
         const d = doc.data();
-        // Populate dropdown
         selectBox.innerHTML += `<option value="${doc.id}">${d.title}</option>`;
         
-        // Populate manage list
         list.innerHTML += `
-          <li class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
-            <div class="flex items-center gap-4">
-              <img src="${d.thumbnailUrl}" class="w-10 h-14 object-cover rounded">
-              <div>
-                <strong class="text-white">${d.title}</strong>
-              </div>
-            </div>
-            <button onclick="deleteSeries('${doc.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-bold">Delete</button>
-          </li>`;
+          <tr class="hover:bg-slate-800/50 transition">
+            <td class="py-3 px-2">
+              <img src="${d.thumbnailUrl}" class="w-12 h-16 object-cover rounded shadow-lg border border-slate-700">
+            </td>
+            <td class="py-3 px-2 font-bold text-white text-lg">${d.title}</td>
+            <td class="py-3 px-2 text-right">
+              <button onclick="deleteSeries('${doc.id}')" class="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-lg">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </td>
+          </tr>`;
       });
     });
   </script>
