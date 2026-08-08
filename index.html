@@ -571,8 +571,9 @@
           <button type="button" class="block w-full text-center bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-semibold transition">Watch Now</button>
         `;
 
+        // 🔴 শুধুমাত্র এই জায়গাটা চেঞ্জ করা হয়েছে যাতে নতুন watch.html পেজে যায়
         card.addEventListener('click', () => {
-          openViralModal(title, videoLink);
+          window.location.href = `watch.html?id=${doc.id}`;
         });
 
         container.appendChild(card);
