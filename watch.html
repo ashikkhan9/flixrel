@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Viral Movie - Flixrel</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body { background-color: #0d0d20; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .ad-box { background: #1a1a32; border: 1px dashed #444; padding: 15px; margin: 20px 0; border-radius: 8px; }
+        .player-wrapper { background: #000; border-radius: 12px; overflow: hidden; margin: 20px 0; }
+        video { width: 100%; aspect-ratio: 16/9; display: block; }
+        .download-btn { display: inline-block; background: #ff0055; color: white; padding: 15px 30px; font-weight: bold; text-decoration: none; border-radius: 50px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Top Ad Banner -->
+        <div class="ad-box">[ Adsterra 728x90 Banner ]</div>
+
+        <!-- মুভির টাইটেল অটোমেটিক এখানে বসবে -->
+        <h2 id="movie_title">Loading...</h2>
+
+        <!-- ভিডিও প্লেয়ার -->
+        <div class="player-wrapper">
+            <video id="viral_video" controls></video>
+        </div>
+
+        <!-- Bottom Ad Banner -->
+        <div class="ad-box">[ Adsterra Native Banner ]</div>
+
+        <!-- ডাউনলোড লিংক অটোমেটিক এখানে বসবে -->
+        <div>
+            <a href="#" id="download_btn" class="download-btn" target="_blank">⬇ Download HD (Doodstream)</a>
+        </div>
+    </div>
+
+    <script>
+        // URL থেকে মুভির আইডিটা বের করা (যেমন: watch.html?id=viral_01)
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('id');
+
+        // ডাটাবেস (movies.json) থেকে ডাটা নিয়ে আসা
+        fetch('movies.json')
+            .then(response => response.json())
+            .then(data => {
+                if(data[movieId]) {
+                    const movie = data[movieId];
+                    
+                    // টাইটেল এবং ডাউনলোড লিংক সেট করা
+                    document.getElementById('movie_title').innerText = "🔥 " + movie.title;
+                    document.getElementById('download_btn').href = movie.download_url;
+
+                    // ভিডিও প্লেয়ার সেটআপ করা
+                    const video = document.getElementById('viral_video');
+                    if (Hls.isSupported()) {
+                        const hls = new Hls();
+                        hls.loadSource(movie.stream_url);
+                        hls.attachMedia(video);
+                    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                        video.src = movie.stream_url;
+                    }
+                } else {
+                    document.getElementById('movie_title').innerText = "Movie Not Found!";
+                }
+            })
+            .catch(error => console.error('Error loading movie data:', error));
+    </script>
+
+</body>
+</html>
