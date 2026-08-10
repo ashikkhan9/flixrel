@@ -30,7 +30,7 @@
     @media (min-width: 640px) { .player-container { height: 60vh; } } 
     @media (min-width: 1024px) { .player-container { height: 80vh; } } 
 
-    /* 🔥 Custom YouTube-style Red Progress Bar 🔥 */
+    /* Custom YouTube-style Red Progress Bar */
     input[type=range] {
       -webkit-appearance: none;
       width: 100%;
@@ -41,16 +41,14 @@
       cursor: pointer;
       transition: height 0.2s ease;
     }
-    input[type=range]:hover {
-      height: 6px; /* হোভার করলে একটু মোটা হবে */
-    }
+    input[type=range]:hover { height: 6px; }
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
       width: 14px;
       height: 14px;
       border-radius: 50%;
-      background: #ff0000; /* ইউটিউব রেড */
+      background: #ff0000;
       cursor: pointer;
       transition: transform 0.2s;
     }
@@ -62,11 +60,9 @@
       cursor: pointer;
       border: none;
     }
-    input[type=range]:hover::-webkit-slider-thumb {
-      transform: scale(1.3);
-    }
+    input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.3); }
     
-    /* কন্ট্রোল প্যানেল হাইড/শো এনিমেশন */
+    /* Controls Overlay */
     .controls-overlay {
       opacity: 0;
       transition: opacity 0.3s ease;
@@ -98,27 +94,23 @@
           <span id="wait-message" class="font-semibold">Loading video...</span>
         </div>
         
-        <!-- Native Video (Controls Removed for Custom UI) -->
-        <video id="video-player" class="w-full h-full object-contain hidden relative z-10" playsinline webkit-playsinline></video>
+        <video id="video-player" class="w-full h-full object-contain hidden relative z-10" playsinline webkit-playsinline preload="auto"></video>
         
-        <!-- Double Tap Zones (For Mobile) -->
+        <!-- Double Tap Zones -->
         <div id="left-tap-zone" class="absolute left-0 top-0 w-1/3 h-full z-20 hidden"></div>
         <div id="right-tap-zone" class="absolute right-0 top-0 w-1/3 h-full z-20 hidden"></div>
 
-        <!-- 🔥 Custom UI Controls 🔥 -->
+        <!-- Custom Controls -->
         <div id="custom-controls" class="controls-overlay absolute bottom-0 left-0 right-0 px-4 pb-4 pt-16 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-30 flex flex-col gap-3 hidden">
           
-          <!-- Red Progress Bar -->
           <div class="w-full relative flex items-center">
             <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1">
           </div>
 
-          <!-- Buttons Row -->
           <div class="flex items-center justify-between text-white">
             <div class="flex items-center gap-4 sm:gap-6">
               <button id="play-pause-btn" class="text-xl sm:text-2xl hover:text-red-500 transition"><i class="fa-solid fa-play"></i></button>
               
-              <!-- 10s Skip Buttons -->
               <button id="rewind-btn" class="hover:text-red-500 transition flex items-center gap-1 text-sm sm:text-base">
                 <i class="fa-solid fa-rotate-left"></i> <span>10s</span>
               </button>
@@ -128,8 +120,6 @@
 
               <span id="time-display" class="text-xs sm:text-sm font-medium text-gray-300">00:00 / 00:00</span>
             </div>
-
-            <!-- Fullscreen Button -->
             <button id="fullscreen-btn" class="text-lg sm:text-xl hover:text-red-500 transition"><i class="fa-solid fa-expand"></i></button>
           </div>
         </div>
@@ -159,13 +149,11 @@
     const params = new URLSearchParams(window.location.search);
     const videoId = params.get('id');
     
-    // UI Elements
     const loadingText = document.getElementById('loading-text');
     const waitMessage = document.getElementById('wait-message');
     const videoEl = document.getElementById('video-player');
     const iframeEl = document.getElementById('iframe-player');
     
-    // Custom Control Elements
     const customControls = document.getElementById('custom-controls');
     const playPauseBtn = document.getElementById('play-pause-btn');
     const progressBar = document.getElementById('progress-bar');
@@ -179,7 +167,7 @@
 
     let isVideoReady = false;
 
-    // 🔥 1. Custom Player Logic 🔥
+    // Time Format Logic
     function formatTime(seconds) {
       if(isNaN(seconds)) return "00:00";
       const h = Math.floor(seconds / 3600);
@@ -189,6 +177,7 @@
       return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
+    // Toggle Play/Pause
     function togglePlay() {
       if(!isVideoReady) return;
       if (videoEl.paused) {
@@ -201,45 +190,37 @@
     }
 
     playPauseBtn.addEventListener('click', togglePlay);
-    videoEl.addEventListener('click', togglePlay); // ক্লিক করলে প্লে/পজ হবে
+    videoEl.addEventListener('click', togglePlay);
 
-    // Update Progress Bar (Red Track)
+    // Progress Bar Logic
     videoEl.addEventListener('timeupdate', () => {
       if(!videoEl.duration) return;
       const progressPercent = (videoEl.currentTime / videoEl.duration) * 100;
       progressBar.value = progressPercent;
       timeDisplay.innerText = `${formatTime(videoEl.currentTime)} / ${formatTime(videoEl.duration)}`;
-      
-      // Dynamic Red Gradient fill
       progressBar.style.background = `linear-gradient(to right, #ff0000 0%, #ff0000 ${progressPercent}%, rgba(255,255,255,0.3) ${progressPercent}%, rgba(255,255,255,0.3) 100%)`;
     });
 
-    // Seek via Progress Bar
     progressBar.addEventListener('input', (e) => {
       const seekTime = (e.target.value / 100) * videoEl.duration;
       videoEl.currentTime = seekTime;
     });
 
-    // 10 Second Skips
     rewindBtn.addEventListener('click', () => { videoEl.currentTime -= 10; });
     forwardBtn.addEventListener('click', () => { videoEl.currentTime += 10; });
 
-    // Double Tap to skip (Mobile Support)
     let lastTap = 0;
-    leftTapZone.addEventListener('click', (e) => {
+    leftTapZone.addEventListener('click', () => {
       const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap;
-      if (tapLength < 500 && tapLength > 0) { videoEl.currentTime -= 10; }
+      if (currentTime - lastTap < 500) videoEl.currentTime -= 10;
       lastTap = currentTime;
     });
-    rightTapZone.addEventListener('click', (e) => {
+    rightTapZone.addEventListener('click', () => {
       const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap;
-      if (tapLength < 500 && tapLength > 0) { videoEl.currentTime += 10; }
+      if (currentTime - lastTap < 500) videoEl.currentTime += 10;
       lastTap = currentTime;
     });
 
-    // Fullscreen Support
     fullscreenBtn.addEventListener('click', () => {
       if (!document.fullscreenElement) {
         if(videoWrapper.requestFullscreen) videoWrapper.requestFullscreen();
@@ -254,38 +235,34 @@
       playPauseBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i>';
     });
 
-    // Mobile Control visibility
     videoWrapper.addEventListener('touchstart', () => {
       customControls.classList.add('active');
       setTimeout(() => customControls.classList.remove('active'), 3000);
     });
 
-    // 🔥 2. Forced Buffering 6 Seconds 🔥
-    function startForcedBuffering(playCallback) {
+    // 🔥 Updated Forced Buffering: English Text & No Auto-Play 🔥
+    function startForcedBuffering() {
       let countdown = 6;
-      waitMessage.innerText = `প্লিজ ওয়েট... বাফারিং হচ্ছে (${countdown}s)`;
+      waitMessage.innerText = `Please wait... Buffering (${countdown}s)`;
       
       const timer = setInterval(() => {
         countdown--;
         if (countdown > 0) {
-          waitMessage.innerText = `প্লিজ ওয়েট... বাফারিং হচ্ছে (${countdown}s)`;
+          waitMessage.innerText = `Please wait... Buffering (${countdown}s)`;
         } else {
           clearInterval(timer);
           loadingText.style.display = "none";
           isVideoReady = true;
           
-          // Show controls and tap zones
+          // Show controls for user to click play
           customControls.classList.remove('hidden');
           leftTapZone.classList.remove('hidden');
           rightTapZone.classList.remove('hidden');
-          
-          playCallback(); 
-          playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+          playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
         }
       }, 1000);
     }
 
-    // Database Fetch
     if (!videoId) {
       loadingText.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-500"></i> Error: No video selected!';
     } else {
@@ -313,24 +290,25 @@
                 maxMaxBufferLength: 90,     
                 maxBufferSize: 120 * 1024 * 1024, 
                 enableWorker: true,
-                stretchShortVideoTrack: true 
+                stretchShortVideoTrack: true,
+                maxBufferHole: 0.5,           // গ্যাপগুলো ইগনোর করবে
+                maxAudioFramesDrift: 2,       // অডিও-ভিডিও সিঙ্ক ঠিক রাখবে
+                appendErrorMaxRetry: 10
               });
 
               hls.loadSource(videoUrl);
               hls.attachMedia(videoEl);
               
               hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                startForcedBuffering(() => {
-                  videoEl.play().catch(() => console.log("Autoplay blocked."));
-                });
+                startForcedBuffering(); // শুধু বাফার হবে, অটো-প্লে হবে না
               });
             } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
               videoEl.src = videoUrl;
-              startForcedBuffering(() => { videoEl.play(); });
+              startForcedBuffering();
             }
           } else {
             videoEl.src = videoUrl;
-            startForcedBuffering(() => { videoEl.play().catch(()=>console.log("Autoplay blocked")); });
+            startForcedBuffering();
           }
         } else {
           loadingText.style.display = "none";
