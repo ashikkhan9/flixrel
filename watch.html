@@ -3,61 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Watch Now - Flixrel</title>
-  <!-- Tailwind CSS & HLS.js -->
+  <title>Watch Video - Flixrel</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <style>
-    body { background-color: #0b0f19; color: white; font-family: 'Segoe UI', system-ui, sans-serif; }
-    .glass-strong { background: rgba(15, 20, 35, 0.72); backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.1); }
-    /* এডস্ট্রা অ্যাডের বক্সের ডিজাইন */
-    .ad-box { background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; color: #666; margin: 20px 0; display: flex; justify-content: center; align-items: center; min-height: 90px; }
-  </style>
-</head>
-<body class="p-4 sm:p-8 selection:bg-indigo-500/30 antialiased">
-
-  <div class="max-w-5xl mx-auto">
-    <!-- ব্যাক বাটন -->
-    <a href="index.html" class="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition-colors mb-6 font-medium">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-      Back to Home
-    </a>
-
-    <!-- 🔴 Adsterra: Top Banner Ad -->
-    <div class="ad-box">
-      [ Adsterra 728x90 Banner Ad কোড এখানে বসাবে ]
-    </div>
-
-    <!-- মুভির টাইটেল -->
-    <h1 id="movie-title" class="text-2xl sm:text-3xl font-bold mb-6 text-white/90">Loading Video...</h1>
-
-    <!-- ভিডিও প্লেয়ার -->
-    <div class="glass-strong rounded-2xl overflow-hidden shadow-2xl shadow-black/50 mb-6 relative aspect-video bg-black">
-      <video id="video-player" class="w-full h-full" controls playsinline></video>
-    </div>
-
-    <!-- ভিডিওর তথ্য ও ডাউনলোড বাটন -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-between items-center mb-8">
-      <p id="movie-meta" class="text-white/50 text-sm"></p>
-      
-      <a id="download-btn" href="#" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-400 hover:to-violet-500 text-white px-8 py-3 rounded-xl font-semibold shadow-lg shadow-indigo-500/25 transition-all active:scale-95 text-center flex items-center justify-center gap-2 hidden">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-        Download HD
-      </a>
-    </div>
-
-    <!-- 🔴 Adsterra: Native Banner / Social Bar Ad -->
-    <div class="ad-box min-h-[250px]">
-      [ Adsterra Native Banner / Social Bar কোড এখানে বসাবে ]
-    </div>
-  </div>
-
-  <!-- Firebase স্ক্রিপ্টস -->
+  
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   
+  <!-- HLS.js for .m3u8 video playback -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    body { background-color: #0b0f19; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <header class="p-4 border-b border-white/10 flex items-center justify-between glass sticky top-0 z-50">
+    <a href="index.html" class="text-xl font-bold text-indigo-400 hover:text-indigo-300 transition flex items-center gap-2">
+      <i class="fa-solid fa-arrow-left"></i> Back to Home
+    </a>
+    <div class="text-xl font-bold bg-gradient-to-r from-white to-indigo-200 bg-clip-text text-transparent">Flixrel</div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col items-center p-4 sm:p-8 w-full max-w-5xl mx-auto">
+    <div class="w-full glass rounded-2xl overflow-hidden shadow-2xl">
+      
+      <!-- Video Player Container -->
+      <div class="relative w-full aspect-video bg-black flex items-center justify-center">
+        <p id="loading-text" class="absolute text-white/50 text-lg flex items-center gap-2">
+          <i class="fa-solid fa-spinner fa-spin"></i> Loading video...
+        </p>
+        
+        <!-- Native Video Tag for m3u8/mp4 -->
+        <video id="video-player" class="w-full h-full hidden" controls playsinline></video>
+        
+        <!-- Iframe for Doodstream/3rd party links -->
+        <iframe id="iframe-player" class="w-full h-full hidden" frameborder="0" allowfullscreen></iframe>
+      </div>
+
+      <!-- Video Details -->
+      <div class="p-6 sm:p-8">
+        <h1 id="video-title" class="text-2xl sm:text-3xl font-bold mb-2">Loading Title...</h1>
+        <p id="video-meta" class="text-indigo-400 text-sm font-semibold mb-6 tracking-wider uppercase"></p>
+        
+        <a id="download-btn" href="#" target="_blank" class="hidden inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg shadow-emerald-500/20">
+          <i class="fa-solid fa-download"></i> Download File
+        </a>
+      </div>
+    </div>
+  </main>
+
   <script>
-    // তোমার ফায়ারবেস কনফিগারেশন
+    // 1. Firebase Setup
     const firebaseConfig = {
       apiKey: "AIzaSyC149Y2CR46kYH2StZCJXc-87BP9EroIcg",
       authDomain: "flixrel.firebaseapp.com",
@@ -66,53 +70,79 @@
       messagingSenderId: "838788026123",
       appId: "1:838788026123:web:dfca0835a24b4816499c0e"
     };
-    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // URL থেকে মুভির ID বের করা
-    const urlParams = new URLSearchParams(window.location.search);
-    const movieId = urlParams.get('id');
+    // 2. Get Video ID from URL (e.g. watch.html?id=xyz123)
+    const params = new URLSearchParams(window.location.search);
+    const videoId = params.get('id');
+    
+    const loadingText = document.getElementById('loading-text');
+    const videoEl = document.getElementById('video-player');
+    const iframeEl = document.getElementById('iframe-player');
 
-    const titleEl = document.getElementById('movie-title');
-    const metaEl = document.getElementById('movie-meta');
-    const downloadBtn = document.getElementById('download-btn');
-    const video = document.getElementById('video-player');
+    if (!videoId) {
+      loadingText.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-500"></i> Error: No video selected!';
+    } else {
+      // 3. Fetch video details from Firestore
+      db.collection("movies").doc(videoId).get().then((doc) => {
+        if (!doc.exists) {
+          loadingText.innerHTML = '<i class="fa-solid fa-ghost text-red-500"></i> Video not found or deleted!';
+          return;
+        }
+        
+        const data = doc.data();
+        
+        // Set Titles & Details
+        document.getElementById('video-title').innerText = data.title || "Untitled Video";
+        document.getElementById('video-meta').innerText = (data.releaseYear || '') + ' • ' + (data.type || 'Viral');
+        
+        // Show Download Button if URL exists
+        if (data.downloadUrl && data.downloadUrl.trim() !== "") {
+          const dlBtn = document.getElementById('download-btn');
+          dlBtn.href = data.downloadUrl;
+          dlBtn.classList.remove('hidden');
+        }
 
-    if(movieId) {
-      db.collection("episodes").doc(movieId).get().then((doc) => {
-        if (doc.exists) {
-          const movie = doc.data();
-          
-          titleEl.innerText = movie.series || movie.title || 'Untitled Video';
-          metaEl.innerText = `${movie.releaseYear || ''} • ${movie.type ? movie.type.toUpperCase() : 'VIRAL'}`;
-          
-          // ডাটাবেস থেকে লিংক নেওয়া
-          const videoSrc = movie.embedUrl || movie.videoUrl || '';
-          const downloadSrc = movie.downloadUrl || videoSrc; 
-          
-          if(downloadSrc) {
-            downloadBtn.href = downloadSrc;
-            downloadBtn.classList.remove('hidden');
-          }
+        const videoUrl = data.videoUrl || data.embedUrl || "";
+        loadingText.style.display = "none";
 
-          // HLS (m3u8) সাপোর্ট চেক ও প্লেয়ার সেটআপ
-          if (videoSrc.includes('.m3u8') && Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(videoSrc);
-            hls.attachMedia(video);
+        // 4. Video Player Logic
+        if (videoUrl.includes('.m3u8') || videoUrl.includes('.mp4')) {
+          videoEl.classList.remove('hidden');
+          
+          if (videoUrl.includes('.m3u8')) {
+            // Setup HLS.js for .m3u8 links
+            if (Hls.isSupported()) {
+              const hls = new Hls();
+              hls.loadSource(videoUrl);
+              hls.attachMedia(videoEl);
+              hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                videoEl.play().catch(() => console.log("Autoplay blocked by browser."));
+              });
+            } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+              // For Safari users
+              videoEl.src = videoUrl;
+              videoEl.play();
+            } else {
+              loadingText.innerText = "Your browser does not support this video format.";
+              loadingText.style.display = "block";
+            }
           } else {
-            // সাধারণ MP4 ফাইল বা iOS ডিভাইসের জন্য
-            video.src = videoSrc;
+            // For standard .mp4
+            videoEl.src = videoUrl;
+            videoEl.play().catch(() => console.log("Autoplay blocked."));
           }
         } else {
-          titleEl.innerText = "Video not found!";
+          // For Doodstream or other iframe links
+          iframeEl.src = videoUrl;
+          iframeEl.classList.remove('hidden');
         }
-      }).catch((error) => {
-        console.error("Error fetching video:", error);
-        titleEl.innerText = "Error loading video.";
+
+      }).catch(error => {
+        console.error(error);
+        loadingText.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-500"></i> Failed to connect to database.';
       });
-    } else {
-       titleEl.innerText = "Invalid Video ID";
     }
   </script>
 </body>
