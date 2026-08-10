@@ -542,8 +542,8 @@
       document.body.style.overflow = '';
     });
 
-    // 🔴 ঠিক এই লাইনটাতেই চেঞ্জ করে 'movies' করে দিয়েছি
-    db.collection("movies").orderBy("createdAt", "desc").get().then((snapshot) => {
+    // 🔴 ঠিক এই লাইনটাতেই চেঞ্জ করে 'orderBy' মুছে দিয়েছি যাতে ফায়ারবেসের রুলস ব্লক না করে
+    db.collection("movies").get().then((snapshot) => {
       const container = document.getElementById("movies-grid");
       if(!container) return;
       container.innerHTML = "";
@@ -557,7 +557,7 @@
         const movie = doc.data();
         const videoLink = movie.embedUrl || movie.videoUrl || '';
         const title = movie.series || movie.title || 'Untitled';
-        const poster = movie.posterUrl || movie.thumbnailUrl || '';
+        const poster = movie.posterUrl || movie.thumbnailUrl || 'https://placehold.co/400x600/0f172a/818cf8?text=Flixrel';
 
         const card = document.createElement('div');
         card.className = "bg-slate-800/80 border border-white/10 p-3 rounded-xl shadow-lg flex flex-col justify-between cursor-pointer group";
@@ -578,6 +578,8 @@
       });
     }).catch(error => {
       console.error("Error fetching from Firestore:", error);
+      const container = document.getElementById("movies-grid");
+      if(container) container.innerHTML = "<p class='text-red-400 col-span-full text-center py-4'>Error loading movies. Check console.</p>";
     });
   </script>
 
