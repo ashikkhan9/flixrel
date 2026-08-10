@@ -35,17 +35,17 @@
   <main class="flex-1 flex flex-col items-center p-4 sm:p-8 w-full max-w-5xl mx-auto">
     <div class="w-full glass rounded-2xl overflow-hidden shadow-2xl">
       
-      <!-- Video Player Container -->
-      <div class="relative w-full aspect-video bg-black flex items-center justify-center">
+      <!-- Smart Video Player Container (অটোমেটিক সাইজ ঠিক করবে) -->
+      <div class="relative w-full bg-black flex items-center justify-center min-h-[40vh] max-h-[85vh]">
         <p id="loading-text" class="absolute text-white/50 text-lg flex items-center gap-2">
           <i class="fa-solid fa-spinner fa-spin"></i> Loading video...
         </p>
         
-        <!-- Native Video Tag for m3u8/mp4 -->
-        <video id="video-player" class="w-full h-full hidden" controls playsinline></video>
+        <!-- Native Video Tag for m3u8/mp4 (লম্বা বা চওড়া যেকোনো সাইজে ফিট হবে) -->
+        <video id="video-player" class="w-auto h-auto max-w-full max-h-[85vh] hidden" controls playsinline></video>
         
-        <!-- Iframe for Doodstream/3rd party links -->
-        <iframe id="iframe-player" class="w-full h-full hidden" frameborder="0" allowfullscreen></iframe>
+        <!-- Iframe for Doodstream/3rd party links (স্ট্যান্ডার্ড মুভি সাইজ) -->
+        <iframe id="iframe-player" class="w-full aspect-video hidden" frameborder="0" allowfullscreen></iframe>
       </div>
 
       <!-- Video Details -->
@@ -73,7 +73,7 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 2. Get Video ID from URL (e.g. watch.html?id=xyz123)
+    // 2. Get Video ID from URL
     const params = new URLSearchParams(window.location.search);
     const videoId = params.get('id');
     
@@ -84,7 +84,7 @@
     if (!videoId) {
       loadingText.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-500"></i> Error: No video selected!';
     } else {
-      // 3. Fetch video details from Firestore
+      // 3. Fetch video details
       db.collection("movies").doc(videoId).get().then((doc) => {
         if (!doc.exists) {
           loadingText.innerHTML = '<i class="fa-solid fa-ghost text-red-500"></i> Video not found or deleted!';
@@ -93,11 +93,9 @@
         
         const data = doc.data();
         
-        // Set Titles & Details
         document.getElementById('video-title').innerText = data.title || "Untitled Video";
         document.getElementById('video-meta').innerText = (data.releaseYear || '') + ' • ' + (data.type || 'Viral');
         
-        // Show Download Button if URL exists
         if (data.downloadUrl && data.downloadUrl.trim() !== "") {
           const dlBtn = document.getElementById('download-btn');
           dlBtn.href = data.downloadUrl;
@@ -107,21 +105,25 @@
         const videoUrl = data.videoUrl || data.embedUrl || "";
         loadingText.style.display = "none";
 
-        // 4. Video Player Logic
+        // 4. Video Player Logic & Anti-Buffering config
         if (videoUrl.includes('.m3u8') || videoUrl.includes('.mp4')) {
           videoEl.classList.remove('hidden');
           
           if (videoUrl.includes('.m3u8')) {
-            // Setup HLS.js for .m3u8 links
             if (Hls.isSupported()) {
-              const hls = new Hls();
+              // Anti-Buffering HLS config
+              const hls = new Hls({
+                maxBufferLength: 30,
+                maxMaxBufferLength: 60,
+                maxBufferSize: 60 * 1000 * 1000,
+                capLevelToPlayerSize: true
+              });
               hls.loadSource(videoUrl);
               hls.attachMedia(videoEl);
               hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                videoEl.play().catch(() => console.log("Autoplay blocked by browser."));
+                videoEl.play().catch(() => console.log("Autoplay blocked."));
               });
             } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
-              // For Safari users
               videoEl.src = videoUrl;
               videoEl.play();
             } else {
@@ -129,12 +131,10 @@
               loadingText.style.display = "block";
             }
           } else {
-            // For standard .mp4
             videoEl.src = videoUrl;
             videoEl.play().catch(() => console.log("Autoplay blocked."));
           }
         } else {
-          // For Doodstream or other iframe links
           iframeEl.src = videoUrl;
           iframeEl.classList.remove('hidden');
         }
