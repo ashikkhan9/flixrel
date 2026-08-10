@@ -86,32 +86,11 @@
       --scrollbar-thumb-hover: rgba(129, 140, 248, 0.75);
     }
 
-    * {
-      scrollbar-width: thin;
-      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-    }
-
-    *::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    *::-webkit-scrollbar-track {
-      background: var(--scrollbar-track);
-      border-radius: 999px;
-    }
-
-    *::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg, var(--scrollbar-thumb), rgba(99, 102, 241, 0.25));
-      border-radius: 999px;
-      border: 2px solid transparent;
-      background-clip: padding-box;
-      transition: background 0.3s ease;
-    }
-
-    *::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(180deg, var(--scrollbar-thumb-hover), rgba(129, 140, 248, 0.4));
-    }
+    * { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); }
+    *::-webkit-scrollbar { width: 8px; height: 8px; }
+    *::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 999px; }
+    *::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--scrollbar-thumb), rgba(99, 102, 241, 0.25)); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; transition: background 0.3s ease; }
+    *::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--scrollbar-thumb-hover), rgba(129, 140, 248, 0.4)); }
 
     body {
       background: var(--flix-bg);
@@ -121,94 +100,33 @@
         radial-gradient(ellipse 50% 30% at 0% 80%, rgba(59, 130, 246, 0.06), transparent);
     }
 
-    .glass {
-      background: rgba(255, 255, 255, 0.04);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .glass-strong {
-      background: rgba(15, 20, 35, 0.72);
-      backdrop-filter: blur(28px);
-      -webkit-backdrop-filter: blur(28px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .skeleton {
-      background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.04) 0%,
-        rgba(255, 255, 255, 0.1) 50%,
-        rgba(255, 255, 255, 0.04) 100%
-      );
-      background-size: 200% 100%;
-      animation: shimmer 1.6s ease-in-out infinite;
-    }
-
-    .movie-card {
-      transform-style: preserve-3d;
-      perspective: 1000px;
-      transition: transform 0.15s ease-out, box-shadow 0.35s ease;
-    }
-
-    .movie-card-inner {
-      transform-style: preserve-3d;
-      transition: transform 0.12s ease-out;
-    }
-
-    .movie-card-glow {
-      position: absolute;
-      inset: -20%;
-      border-radius: 50%;
-      filter: blur(40px);
-      opacity: 0;
-      transition: opacity 0.45s ease;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .movie-card:hover .movie-card-glow {
-      opacity: 0.55;
-    }
-
-    .wheel-pointer {
-      filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.6));
-    }
-
-    .vibe-btn.active {
-      background: rgba(99, 102, 241, 0.25);
-      border-color: rgba(129, 140, 248, 0.6);
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
-    }
-
-    .heart-btn:hover svg {
-      animation: pulseHeart 1.4s ease-in-out infinite;
-    }
-
-    .heart-btn.saved svg {
-      fill: #f43f5e;
-      color: #f43f5e;
-    }
-
-    .search-kbd {
-      font-variant-numeric: tabular-nums;
-    }
-
-    .modal-backdrop {
-      animation: backdropIn 0.35s ease forwards;
-    }
-
-    .modal-panel {
-      animation: modalIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
+    .glass { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-strong { background: rgba(15, 20, 35, 0.72); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    
+    .skeleton { background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.04) 100%); background-size: 200% 100%; animation: shimmer 1.6s ease-in-out infinite; }
+    
+    .movie-card { transform-style: preserve-3d; perspective: 1000px; transition: transform 0.15s ease-out, box-shadow 0.35s ease; }
+    .movie-card-inner { transform-style: preserve-3d; transition: transform 0.12s ease-out; }
+    .movie-card-glow { position: absolute; inset: -20%; border-radius: 50%; filter: blur(40px); opacity: 0; transition: opacity 0.45s ease; pointer-events: none; z-index: 0; }
+    .movie-card:hover .movie-card-glow { opacity: 0.55; }
+    
+    .wheel-pointer { filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.6)); }
+    .vibe-btn.active { background: rgba(99, 102, 241, 0.25); border-color: rgba(129, 140, 248, 0.6); box-shadow: 0 0 20px rgba(99, 102, 241, 0.25); }
+    .heart-btn:hover svg { animation: pulseHeart 1.4s ease-in-out infinite; }
+    .heart-btn.saved svg { fill: #f43f5e; color: #f43f5e; }
+    
+    .search-kbd { font-variant-numeric: tabular-nums; }
+    .modal-backdrop { animation: backdropIn 0.35s ease forwards; }
+    .modal-panel { animation: modalIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   </style>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="min-h-screen font-display text-white antialiased selection:bg-indigo-500/30 selection:text-white">
 
+  <!-- Toast Notification -->
   <div id="toast-container" class="fixed top-24 right-4 z-[100] flex flex-col gap-3 pointer-events-none max-w-sm w-full"></div>
 
+  <!-- Header -->
   <header id="navbar" class="fixed top-0 inset-x-0 z-50 glass border-b border-white/5 transition-all duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 gap-4">
@@ -233,12 +151,7 @@
             />
             <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
               <kbd class="search-kbd hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] text-white/30 glass border-white/5">Ctrl K</kbd>
-              <button
-                id="voice-search-btn"
-                type="button"
-                aria-label="Voice search"
-                class="p-2 rounded-lg text-white/50 hover:text-indigo-400 hover:bg-white/5 transition-all duration-200"
-              >
+              <button id="voice-search-btn" type="button" aria-label="Voice search" class="p-2 rounded-lg text-white/50 hover:text-indigo-400 hover:bg-white/5 transition-all duration-200">
                 <svg id="mic-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
                 </svg>
@@ -247,11 +160,7 @@
           </div>
         </div>
 
-        <button
-          id="watchlist-toggle"
-          type="button"
-          class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl glass text-sm text-white/70 hover:text-white hover:border-indigo-500/30 transition-all duration-300"
-        >
+        <button id="watchlist-toggle" type="button" class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl glass text-sm text-white/70 hover:text-white hover:border-indigo-500/30 transition-all duration-300">
           <svg class="w-4 h-4 text-rose-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
           <span class="hidden sm:inline">Watchlist</span>
           <span id="watchlist-count" class="text-xs bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded-full">0</span>
@@ -261,6 +170,7 @@
   </header>
 
   <section class="relative pt-28 pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <!-- Hero Text -->
     <div class="text-center mb-10">
       <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-3">
         Discover Your Next
@@ -269,6 +179,7 @@
       <p class="text-white/45 text-sm sm:text-base max-w-lg mx-auto">Curated cinema with 3D previews, vibe filters, and a lucky spin — powered by TMDB.</p>
     </div>
 
+    <!-- Mood/Vibe Filter -->
     <div id="mood-bar" class="sticky top-[4.5rem] z-40 mb-8 mx-auto max-w-3xl">
       <div class="glass rounded-2xl p-2 flex flex-wrap items-center justify-center gap-2 shadow-xl shadow-black/20">
         <span class="text-xs text-white/35 uppercase tracking-widest px-2 hidden sm:inline">Vibe</span>
@@ -281,13 +192,13 @@
       </div>
     </div>
 
+    <!-- TMDB Movies Section -->
     <div class="flex items-center justify-between mb-6">
       <h2 id="section-title" class="text-lg font-semibold text-white/90 transition-all duration-300">Trending Now</h2>
       <p id="results-count" class="text-xs text-white/35"></p>
     </div>
-
+    
     <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5"></div>
-
     <div id="skeleton-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5 hidden"></div>
 
     <div id="scroll-sentinel" class="h-20 flex items-center justify-center mt-8">
@@ -302,17 +213,14 @@
         <span>🔥 Viral Section & Manual Uploads</span>
       </h2>
       <div id="movies-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <p class="text-slate-400 col-span-full py-4"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading contents...</p>
       </div>
     </div>
   </section>
 
+  <!-- Feeling Lucky Button -->
   <div class="fixed bottom-8 right-6 z-40 animate-float">
-    <button
-      id="lucky-btn"
-      type="button"
-      aria-label="Feeling lucky — spin the wheel"
-      class="group relative flex items-center gap-3 pl-5 pr-6 py-3.5 rounded-2xl glass-strong shadow-2xl shadow-indigo-500/10 hover:shadow-indigo-500/25 hover:border-indigo-500/30 transition-all duration-300 hover:scale-105 active:scale-95"
-    >
+    <button id="lucky-btn" type="button" aria-label="Feeling lucky — spin the wheel" class="group relative flex items-center gap-3 pl-5 pr-6 py-3.5 rounded-2xl glass-strong shadow-2xl shadow-indigo-500/10 hover:shadow-indigo-500/25 hover:border-indigo-500/30 transition-all duration-300 hover:scale-105 active:scale-95">
       <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30 transition-transform duration-500 group-hover:rotate-180">
         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -325,6 +233,7 @@
     </button>
   </div>
 
+  <!-- Wheel Modal -->
   <div id="wheel-modal" class="fixed inset-0 z-[90] hidden items-center justify-center p-4" aria-hidden="true">
     <div class="wheel-backdrop absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
     <div class="wheel-panel relative glass-strong rounded-3xl p-8 max-w-sm w-full text-center scale-90 opacity-0 transition-all duration-500">
@@ -341,18 +250,15 @@
           <circle cx="100" cy="100" r="8" fill="#6366f1"/>
         </svg>
       </div>
-      <button id="spin-btn" type="button" class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 font-semibold text-sm hover:from-indigo-400 hover:to-violet-500 transition-all duration-300 shadow-lg shadow-indigo-500/25 active:scale-95">
-        Spin!
-      </button>
+      <button id="spin-btn" type="button" class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 font-semibold text-sm hover:from-indigo-400 hover:to-violet-500 transition-all duration-300 shadow-lg shadow-indigo-500/25 active:scale-95">Spin!</button>
       <button id="wheel-close" type="button" class="mt-3 text-sm text-white/40 hover:text-white/70 transition-colors duration-200">Close</button>
     </div>
   </div>
 
-  <!-- 🔥 TMDB IFRAME PLAYER MODAL (STANDARD) 🔥 -->
+  <!-- Watch Modal (TMDB Player) -->
   <div id="watch-modal" class="fixed inset-0 z-[85] hidden items-center justify-center p-4 sm:p-6" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Watch movie">
     <div id="watch-modal-backdrop" class="modal-backdrop absolute inset-0 bg-black/80"></div>
     <div id="watch-modal-panel" class="modal-panel relative glass-strong w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl shadow-black/60 flex flex-col max-h-[92vh]">
-      
       <div class="flex items-center justify-between gap-4 px-5 py-4 border-b border-white/5 shrink-0">
         <div class="min-w-0">
           <p class="text-[10px] uppercase tracking-widest text-indigo-400/80 mb-0.5">Now Playing</p>
@@ -360,31 +266,20 @@
         </div>
         <div class="flex items-center gap-2 shrink-0">
           <button id="watch-modal-details" type="button" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl glass text-xs text-white/70 hover:text-white transition-all duration-200">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            Details
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Details
           </button>
           <button id="watch-modal-close" type="button" aria-label="Close player" class="p-2 rounded-full glass hover:bg-white/10 transition-all duration-200 hover:rotate-90">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
       </div>
-      
       <div class="relative w-full aspect-video bg-black shrink-0">
-        <iframe
-          id="watch-player"
-          class="absolute inset-0 w-full h-full border-0"
-          src=""
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          allowfullscreen
-          webkitallowfullscreen
-          mozallowfullscreen
-        ></iframe>
+        <iframe id="watch-player" class="absolute inset-0 w-full h-full border-0" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
       </div>
-
     </div>
   </div>
 
-  <!-- 🔥 TMDB MOVIE DETAILS MODAL 🔥 -->
+  <!-- Movie Details Modal -->
   <div id="movie-modal" class="fixed inset-0 z-[80] hidden items-end sm:items-center justify-center p-0 sm:p-4" aria-hidden="true" role="dialog" aria-modal="true">
     <div id="modal-backdrop" class="modal-backdrop absolute inset-0 bg-black/70"></div>
     <div id="modal-panel" class="modal-panel relative glass-strong w-full sm:max-w-3xl max-h-[92vh] sm:rounded-3xl rounded-t-3xl overflow-hidden flex flex-col shadow-2xl shadow-black/50">
@@ -404,29 +299,22 @@
             <p id="modal-meta" class="text-sm text-white/45 mb-3"></p>
             <div class="flex flex-wrap items-center gap-3 mb-4">
               <span id="modal-rating" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg glass text-sm">
-                <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                <span id="modal-rating-value"></span>
+                <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> <span id="modal-rating-value"></span>
               </span>
-              <a id="modal-imdb" href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F5C518]/15 text-[#F5C518] text-sm font-semibold hover:bg-[#F5C518]/25 transition-colors duration-200">
-                IMDb <span id="modal-imdb-rating"></span>
-              </a>
+              <a id="modal-imdb" href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F5C518]/15 text-[#F5C518] text-sm font-semibold hover:bg-[#F5C518]/25 transition-colors duration-200">IMDb <span id="modal-imdb-rating"></span></a>
               <button id="modal-watchlist-btn" type="button" class="heart-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg glass text-sm text-white/70 hover:text-rose-400 transition-all duration-200">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                Save
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg> Save
               </button>
             </div>
           </div>
         </div>
-
         <p id="modal-overview" class="text-sm text-white/60 leading-relaxed mt-5 mb-6"></p>
-
         <div id="modal-trailer-section" class="mb-6 hidden">
           <h3 class="text-sm font-semibold text-white/80 mb-3 uppercase tracking-wider">Trailer</h3>
           <div class="relative aspect-video rounded-xl overflow-hidden glass">
             <iframe id="modal-trailer" class="absolute inset-0 w-full h-full" src="" title="Movie trailer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
           </div>
         </div>
-
         <div id="modal-providers-section" class="mb-4">
           <h3 class="text-sm font-semibold text-white/80 mb-3 uppercase tracking-wider">Where to Watch</h3>
           <div id="modal-providers" class="flex flex-wrap gap-2"></div>
@@ -436,6 +324,7 @@
     </div>
   </div>
 
+  <!-- Watchlist Drawer -->
   <div id="watchlist-drawer" class="fixed inset-y-0 right-0 z-[70] w-full sm:w-96 translate-x-full transition-transform duration-300 ease-out glass-strong border-l border-white/5 shadow-2xl flex flex-col">
     <div class="flex items-center justify-between p-5 border-b border-white/5">
       <h3 class="font-semibold">My Watchlist</h3>
@@ -448,52 +337,19 @@
   </div>
   <div id="watchlist-overlay" class="fixed inset-0 z-[65] bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"></div>
 
+  <!-- API Notice -->
   <div id="api-notice" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 hidden max-w-md w-[calc(100%-2rem)] glass-strong rounded-2xl p-4 text-center text-sm border border-amber-500/30 shadow-xl">
     <p class="text-amber-300 font-medium mb-1">TMDB API Key Required</p>
     <p class="text-white/50 text-xs">Set your key in <code class="text-indigo-300">script.js</code> → <code class="text-indigo-300">TMDB_API_KEY</code></p>
   </div>
 
-  <!-- 🔥 VIRAL SECTION NATIVE VIDEO & DOWNLOAD MODAL 🔥 -->
-  <div id="viral-watch-modal" class="fixed inset-0 z-[95] hidden items-center justify-center p-0 bg-black/95" aria-hidden="true" role="dialog" aria-modal="true">
-    
-    <div class="absolute top-0 inset-x-0 z-50 flex items-center justify-between p-4 bg-gradient-to-b from-black/90 to-transparent">
-      <h2 id="viral-modal-title" class="text-white font-bold text-base sm:text-lg truncate max-w-[60%]">Video Title</h2>
-      
-      <div class="flex items-center gap-3">
-        <a id="viral-download-btn" href="#" target="_blank" download class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold text-xs sm:text-sm transition shadow-lg shadow-indigo-600/30">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-          Download
-        </a>
-        <a id="viral-download-icon-btn" href="#" target="_blank" download class="sm:hidden p-2 rounded-full glass text-indigo-400 hover:bg-white/10 transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-        </a>
 
-        <button id="viral-modal-close" type="button" aria-label="Close" class="p-2 rounded-full glass text-white hover:bg-white/10 transition">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Native Player -->
-    <div class="relative w-full h-full flex items-center justify-center">
-      <video
-        id="viral-video-player"
-        class="w-full h-full object-contain bg-black"
-        controls
-        playsinline
-        webkit-playsinline
-      ></video>
-    </div>
-  </div>
-
+  <!-- ================= FIREBASE & VIRAL SECTION SCRIPT ================= -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-  <!-- External Script File -->
-  <script src="script.js"></script>
-
-  <!-- Firebase Scripts & Viral Native Player Logic -->
   <script>
+    // 1. ফায়ারবেস ইনিশিয়ালাইজেশন
     const firebaseConfig = {
       apiKey: "AIzaSyC149Y2CR46kYH2StZCJXc-87BP9EroIcg",
       authDomain: "flixrel.firebaseapp.com",
@@ -502,74 +358,47 @@
       messagingSenderId: "838788026123",
       appId: "1:838788026123:web:dfca0835a24b4816499c0e"
     };
-    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    if (!firebase.apps.length) { 
+      firebase.initializeApp(firebaseConfig); 
+    }
     const db = firebase.firestore();
 
-    const viralModal = document.getElementById('viral-watch-modal');
-    const viralVideo = document.getElementById('viral-video-player');
-    const viralTitle = document.getElementById('viral-modal-title');
-    const viralDownloadBtn = document.getElementById('viral-download-btn');
-    const viralDownloadIconBtn = document.getElementById('viral-download-icon-btn');
-    const viralModalClose = document.getElementById('viral-modal-close');
-
-    function openViralModal(title, videoUrl) {
-      if (!videoUrl) {
-        alert("Video link is missing!");
-        return;
-      }
-
-      viralTitle.textContent = title || 'Viral Video';
-      viralVideo.src = videoUrl;
-      
-      viralDownloadBtn.href = videoUrl;
-      viralDownloadBtn.classList.remove('hidden');
-      viralDownloadIconBtn.href = videoUrl;
-
-      viralModal.classList.remove('hidden');
-      viralModal.classList.add('flex');
-      document.body.style.overflow = 'hidden';
-
-      viralVideo.play().catch(err => {
-        console.log("Autoplay blocked, waiting for user click.");
-      });
-    }
-
-    viralModalClose.addEventListener('click', () => {
-      viralVideo.pause();
-      viralVideo.src = '';
-      viralModal.classList.add('hidden');
-      viralModal.classList.remove('flex');
-      document.body.style.overflow = '';
-    });
-
-    // 🔴 ঠিক এই লাইনটাতেই চেঞ্জ করে 'orderBy' মুছে দিয়েছি যাতে ফায়ারবেসের রুলস ব্লক না করে
+    // 2. ফায়ারবেস থেকে মুভি টেনে আনা (কোনো orderBy বা ক্র্যাশ কোড নেই)
     db.collection("movies").get().then((snapshot) => {
       const container = document.getElementById("movies-grid");
       if(!container) return;
+      
       container.innerHTML = "";
       
       if(snapshot.empty) {
-        container.innerHTML = "<p class='text-white col-span-full text-center py-4'>কোনো মুভি বা ভিডিও পাওয়া যায়নি।</p>";
+        container.innerHTML = "<p class='text-white col-span-full text-center py-4'>কোনো ম্যানুয়াল আপলোড পাওয়া যায়নি।</p>";
         return;
       }
 
       snapshot.forEach(doc => {
         const movie = doc.data();
-        const videoLink = movie.embedUrl || movie.videoUrl || '';
-        const title = movie.series || movie.title || 'Untitled';
-        const poster = movie.posterUrl || movie.thumbnailUrl || 'https://placehold.co/400x600/0f172a/818cf8?text=Flixrel';
+        const title = movie.title || 'Untitled Video';
+        const type = movie.type || 'Viral';
+        const year = movie.releaseYear || '';
+        
+        // ডিফল্ট থাম্বনেইল লজিক
+        let poster = 'https://placehold.co/400x600/0f172a/818cf8?text=Flixrel';
+        if (movie.thumbnailUrl && movie.thumbnailUrl.trim() !== "") {
+            poster = movie.thumbnailUrl;
+        }
 
         const card = document.createElement('div');
-        card.className = "bg-slate-800/80 border border-white/10 p-3 rounded-xl shadow-lg flex flex-col justify-between cursor-pointer group";
+        card.className = "bg-slate-800/80 border border-white/10 p-3 rounded-xl shadow-lg flex flex-col justify-between cursor-pointer group hover:border-indigo-500/50 transition-all";
         card.innerHTML = `
           <div>
-            <img src="${poster}" alt="${title}" class="w-full h-60 object-cover rounded-lg mb-3 group-hover:scale-[1.02] transition">
-            <h3 class="text-white font-bold text-lg truncate">${title}</h3>
-            <p class="text-slate-400 text-sm mb-3">${movie.releaseYear || ''} • <span class="uppercase">${movie.type || 'Viral'}</span></p>
+            <img src="${poster}" alt="${title}" class="w-full h-48 sm:h-60 object-cover rounded-lg mb-3 group-hover:scale-[1.02] transition duration-300">
+            <h3 class="text-white font-bold text-base sm:text-lg truncate">${title}</h3>
+            <p class="text-slate-400 text-xs sm:text-sm mb-3">${year} • <span class="uppercase font-semibold text-indigo-400">${type}</span></p>
           </div>
-          <button type="button" class="block w-full text-center bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-semibold transition">Watch Now</button>
+          <button type="button" class="block w-full text-center bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-semibold transition shadow-lg shadow-indigo-500/30">Watch Now</button>
         `;
 
+        // ক্লিক করলে নতুন watch.html পেজে নিয়ে যাবে
         card.addEventListener('click', () => {
           window.location.href = `watch.html?id=${doc.id}`;
         });
@@ -577,11 +406,17 @@
         container.appendChild(card);
       });
     }).catch(error => {
-      console.error("Error fetching from Firestore:", error);
+      console.error("Firebase Fetch Error:", error);
       const container = document.getElementById("movies-grid");
-      if(container) container.innerHTML = "<p class='text-red-400 col-span-full text-center py-4'>Error loading movies. Check console.</p>";
+      if(container) {
+        container.innerHTML = "<p class='text-red-400 col-span-full text-center py-4'>Connection error! Check console.</p>";
+      }
     });
   </script>
+
+  <!-- ================= EXTERNAL JS (TMDB LOGIC) ================= -->
+  <!-- এটাকে একদম নিচে রাখলাম যাতে এর কোনো সমস্যা ফায়ারবেসকে আটকাতে না পারে -->
+  <script src="script.js"></script>
 
 </body>
 </html>
