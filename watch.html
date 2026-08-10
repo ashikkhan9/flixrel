@@ -19,49 +19,55 @@
   <style>
     body { background-color: #0b0f19; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    
+    .player-container {
+      position: relative;
+      width: 100%;
+      height: 40vh;
+      background: #000;
+    }
+    @media (min-width: 640px) { .player-container { height: 60vh; } } 
+    @media (min-width: 1024px) { .player-container { height: 80vh; } } 
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
   <!-- Navbar -->
   <header class="p-4 border-b border-white/10 flex items-center justify-between glass sticky top-0 z-50">
-    <a href="index.html" class="text-xl font-bold text-indigo-400 hover:text-indigo-300 transition flex items-center gap-2">
-      <i class="fa-solid fa-arrow-left"></i> Back to Home
+    <a href="index.html" class="text-lg sm:text-xl font-bold text-indigo-400 hover:text-indigo-300 transition flex items-center gap-2">
+      <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">Back to Home</span>
     </a>
     <div class="text-xl font-bold bg-gradient-to-r from-white to-indigo-200 bg-clip-text text-transparent">Flixrel</div>
   </header>
 
   <!-- Main Content -->
-  <main class="flex-1 flex flex-col items-center p-4 sm:p-8 w-full max-w-5xl mx-auto">
-    <div class="w-full glass rounded-2xl overflow-hidden shadow-2xl">
+  <main class="flex-1 flex flex-col items-center w-full max-w-6xl mx-auto sm:p-4">
+    <div class="w-full sm:rounded-2xl overflow-hidden glass shadow-2xl flex flex-col">
       
-      <!-- Smart Video Player Container (অটোমেটিক সাইজ ঠিক করবে) -->
-      <div class="relative w-full bg-black flex items-center justify-center min-h-[40vh] max-h-[85vh]">
-        <p id="loading-text" class="absolute text-white/50 text-lg flex items-center gap-2">
+      <!-- Player Container -->
+      <div class="player-container flex items-center justify-center">
+        <p id="loading-text" class="absolute text-white/50 text-lg flex items-center gap-2 z-10">
           <i class="fa-solid fa-spinner fa-spin"></i> Loading video...
         </p>
         
-        <!-- Native Video Tag for m3u8/mp4 (লম্বা বা চওড়া যেকোনো সাইজে ফিট হবে) -->
-        <video id="video-player" class="w-auto h-auto max-w-full max-h-[85vh] hidden" controls playsinline></video>
+        <video id="video-player" class="w-full h-full object-contain hidden relative z-20" controls playsinline webkit-playsinline></video>
         
-        <!-- Iframe for Doodstream/3rd party links (স্ট্যান্ডার্ড মুভি সাইজ) -->
-        <iframe id="iframe-player" class="w-full aspect-video hidden" frameborder="0" allowfullscreen></iframe>
+        <iframe id="iframe-player" class="w-full h-full hidden relative z-20" frameborder="0" allowfullscreen></iframe>
       </div>
 
       <!-- Video Details -->
-      <div class="p-6 sm:p-8">
-        <h1 id="video-title" class="text-2xl sm:text-3xl font-bold mb-2">Loading Title...</h1>
-        <p id="video-meta" class="text-indigo-400 text-sm font-semibold mb-6 tracking-wider uppercase"></p>
+      <div class="p-5 sm:p-8">
+        <h1 id="video-title" class="text-xl sm:text-3xl font-bold mb-2">Loading Title...</h1>
+        <p id="video-meta" class="text-indigo-400 text-xs sm:text-sm font-semibold mb-6 tracking-wider uppercase"></p>
         
-        <a id="download-btn" href="#" target="_blank" class="hidden inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg shadow-emerald-500/20">
-          <i class="fa-solid fa-download"></i> Download File
+        <a id="download-btn" href="#" target="_blank" class="hidden inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl font-bold transition shadow-lg shadow-emerald-500/20 text-sm sm:text-base">
+          <i class="fa-solid fa-download"></i> Download Video
         </a>
       </div>
     </div>
   </main>
 
   <script>
-    // 1. Firebase Setup
     const firebaseConfig = {
       apiKey: "AIzaSyC149Y2CR46kYH2StZCJXc-87BP9EroIcg",
       authDomain: "flixrel.firebaseapp.com",
@@ -73,7 +79,6 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 2. Get Video ID from URL
     const params = new URLSearchParams(window.location.search);
     const videoId = params.get('id');
     
@@ -84,7 +89,6 @@
     if (!videoId) {
       loadingText.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-500"></i> Error: No video selected!';
     } else {
-      // 3. Fetch video details
       db.collection("movies").doc(videoId).get().then((doc) => {
         if (!doc.exists) {
           loadingText.innerHTML = '<i class="fa-solid fa-ghost text-red-500"></i> Video not found or deleted!';
@@ -105,30 +109,57 @@
         const videoUrl = data.videoUrl || data.embedUrl || "";
         loadingText.style.display = "none";
 
-        // 4. Video Player Logic & Anti-Buffering config
         if (videoUrl.includes('.m3u8') || videoUrl.includes('.mp4')) {
           videoEl.classList.remove('hidden');
           
           if (videoUrl.includes('.m3u8')) {
             if (Hls.isSupported()) {
-              // Anti-Buffering HLS config
+              
+              // 🔥 ADVANCED AUTO-NETWORK & BUFFERING SYSTEM 🔥
               const hls = new Hls({
-                maxBufferLength: 30,
-                maxMaxBufferLength: 60,
-                maxBufferSize: 60 * 1000 * 1000,
-                capLevelToPlayerSize: true
+                // ১. নেটওয়ার্ক অনুযায়ী অটোমেটিক কোয়ালিটি ওঠানামা করবে (Auto Bitrate)
+                startLevel: -1, // -1 মানে অটোমেটিক
+                capLevelToPlayerSize: true, // স্ক্রিন অনুযায়ী কোয়ালিটি অ্যাডজাস্ট
+                
+                // ২. এডভান্সড বাফারিং (তোমার কথামতো আগে থেকে ১০, ৩০, ৭০ সেকেন্ড লোড করে রাখবে)
+                maxBufferLength: 30,        // মিনিমাম ৩০ সেকেন্ড আগে থেকে রেডি রাখবে
+                maxMaxBufferLength: 70,     // ম্যাক্সিমাম ৭০ সেকেন্ড পর্যন্ত ডাউনলোড করে রাখবে
+                maxBufferSize: 100 * 1024 * 1024, // ৭০ সেকেন্ড রাখার জন্য ১০০ এমবি পর্যন্ত মেমোরি ইউজ করবে
+                
+                // ৩. নেটওয়ার্ক ড্রপ বা খারাপ হলে বারবার ট্রাই করার সিস্টেম
+                fragLoadingTimeOut: 20000,
+                fragLoadingMaxRetry: 6,     // নেট ছেড়ে দিলে ৬ বার অটো ট্রাই করবে
+                manifestLoadingMaxRetry: 6
               });
+
               hls.loadSource(videoUrl);
               hls.attachMedia(videoEl);
               hls.on(Hls.Events.MANIFEST_PARSED, function() {
                 videoEl.play().catch(() => console.log("Autoplay blocked."));
               });
+              
+              // যদি নেটওয়ার্কের কারণে প্লে আটকে যায়, তাহলে অটো রিকভারি করবে
+              hls.on(Hls.Events.ERROR, function (event, data) {
+                if (data.fatal) {
+                  switch (data.type) {
+                    case Hls.ErrorTypes.NETWORK_ERROR:
+                      console.log("Network error, trying to recover...");
+                      hls.startLoad();
+                      break;
+                    case Hls.ErrorTypes.MEDIA_ERROR:
+                      console.log("Media error, trying to recover...");
+                      hls.recoverMediaError();
+                      break;
+                    default:
+                      hls.destroy();
+                      break;
+                  }
+                }
+              });
+
             } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
               videoEl.src = videoUrl;
               videoEl.play();
-            } else {
-              loadingText.innerText = "Your browser does not support this video format.";
-              loadingText.style.display = "block";
             }
           } else {
             videoEl.src = videoUrl;
@@ -138,9 +169,7 @@
           iframeEl.src = videoUrl;
           iframeEl.classList.remove('hidden');
         }
-
       }).catch(error => {
-        console.error(error);
         loadingText.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-500"></i> Failed to connect to database.';
       });
     }
