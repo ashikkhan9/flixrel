@@ -127,6 +127,20 @@
         <iframe id="iframe-player" class="w-full h-full hidden relative z-20" frameborder="0" allowfullscreen></iframe>
       </div>
 
+      <!-- ⭐ BANNER AD (468x60) - Centered below the player ⭐ -->
+      <div class="w-full flex justify-center items-center py-4 bg-black/30 border-b border-white/5 min-h-[70px]">
+        <script>
+          atOptions = {
+            'key' : 'e88042630b040c15b26b14de3dc42a4b',
+            'format' : 'iframe',
+            'height' : 60,
+            'width' : 468,
+            'params' : {}
+          };
+        </script>
+        <script src="https://www.highperformanceformat.com/e88042630b040c15b26b14de3dc42a4b/invoke.js"></script>
+      </div>
+
       <div class="p-5 sm:p-8">
         <h1 id="video-title" class="text-xl sm:text-3xl font-bold mb-2">Loading Title...</h1>
         <p id="video-meta" class="text-gray-400 text-xs sm:text-sm font-semibold tracking-wider uppercase"></p>
@@ -240,7 +254,6 @@
       setTimeout(() => customControls.classList.remove('active'), 3000);
     });
 
-    // 🔥 Updated Forced Buffering: English Text & No Auto-Play 🔥
     function startForcedBuffering() {
       let countdown = 6;
       waitMessage.innerText = `Please wait... Buffering (${countdown}s)`;
@@ -254,7 +267,6 @@
           loadingText.style.display = "none";
           isVideoReady = true;
           
-          // Show controls for user to click play
           customControls.classList.remove('hidden');
           leftTapZone.classList.remove('hidden');
           rightTapZone.classList.remove('hidden');
@@ -291,8 +303,8 @@
                 maxBufferSize: 120 * 1024 * 1024, 
                 enableWorker: true,
                 stretchShortVideoTrack: true,
-                maxBufferHole: 0.5,           // গ্যাপগুলো ইগনোর করবে
-                maxAudioFramesDrift: 2,       // অডিও-ভিডিও সিঙ্ক ঠিক রাখবে
+                maxBufferHole: 0.5,
+                maxAudioFramesDrift: 2,
                 appendErrorMaxRetry: 10
               });
 
@@ -300,7 +312,7 @@
               hls.attachMedia(videoEl);
               
               hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                startForcedBuffering(); // শুধু বাফার হবে, অটো-প্লে হবে না
+                startForcedBuffering(); 
               });
             } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
               videoEl.src = videoUrl;
@@ -319,7 +331,8 @@
     }
   </script>
 
-  <!-- Maximum Revenue Popunder Ad Script -->
+  <!-- Maximum Revenue Popunder Ad Scripts -->
   <script src="https://pl30798779.effectivecpmnetwork.com/a4/51/d2/a451d201d822af9be20621c72b2a1606.js"></script>
+  <script src="https://pl30798780.effectivecpmnetwork.com/05/12/d3/0512d3e0ec3fd456fc7b490d69a0c47c.js"></script>
 </body>
 </html>
