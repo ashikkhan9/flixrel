@@ -20,16 +20,21 @@
     body { background-color: #0b0f19; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     
-    /* 🎬 Cinematic 21:9 Player Container */
+    /* 🎬 YouTube Style 16:9 Player Container */
     .player-container {
       position: relative;
       width: 100%;
-      aspect-ratio: 21 / 9; /* সিনেমাটিক রেশিও */
+      aspect-ratio: 16 / 9; /* ইউটিউবের মতো স্ট্যান্ডার্ড রেশিও */
       height: auto;
       background: #000;
       overflow: hidden;
     }
-    @media (min-width: 640px) { .player-container { max-height: 70vh; } } 
+    @media (min-width: 640px) { .player-container { max-height: 80vh; } } 
+
+    /* মাউস কার্সর লুকানোর জন্য */
+    .player-container.idle {
+      cursor: none;
+    }
 
     /* Custom YouTube-style Red Progress Bar */
     input[type=range] {
@@ -67,10 +72,11 @@
     .controls-overlay {
       opacity: 0;
       transition: opacity 0.3s ease;
+      pointer-events: none; /* লুকানো অবস্থায় ক্লিক যাতে না লাগে */
     }
-    .player-container:hover .controls-overlay,
     .controls-overlay.active {
       opacity: 1;
+      pointer-events: auto;
     }
   </style>
 </head>
@@ -229,11 +235,13 @@
       const currentTime = new Date().getTime();
       if (currentTime - lastTap < 500) videoEl.currentTime -= 10;
       lastTap = currentTime;
+      showControls();
     });
     rightTapZone.addEventListener('click', () => {
       const currentTime = new Date().getTime();
       if (currentTime - lastTap < 500) videoEl.currentTime += 10;
       lastTap = currentTime;
+      showControls();
     });
 
     // 📱 Auto-Rotate Fullscreen Magic 📱
@@ -242,7 +250,6 @@
         const requestFS = videoWrapper.requestFullscreen || videoWrapper.webkitRequestFullscreen;
         if (requestFS) {
           requestFS.call(videoWrapper).then(() => {
-            // মোবাইলে ল্যান্ডস্কেপ মোড লক করা
             if (screen.orientation && screen.orientation.lock) {
               screen.orientation.lock('landscape').catch(function(error) {
                 console.log("Device doesn't support auto-rotation:", error);
@@ -254,7 +261,6 @@
         const exitFS = document.exitFullscreen || document.webkitExitFullscreen;
         if (exitFS) {
           exitFS.call(document).then(() => {
-            // ফুলস্ক্রিন থেকে বের হলে রোটেশন আনলক করা
             if (screen.orientation && screen.orientation.unlock) {
               screen.orientation.unlock();
             }
@@ -265,11 +271,34 @@
 
     videoEl.addEventListener('ended', () => {
       playPauseBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i>';
+      showControls();
     });
 
-    videoWrapper.addEventListener('touchstart', () => {
+    // 🌟 Idle Timer Logic - অটোমেটিক কন্ট্রোল লুকানোর ম্যাজিক 🌟
+    let hideControlsTimeout;
+    
+    function showControls() {
       customControls.classList.add('active');
-      setTimeout(() => customControls.classList.remove('active'), 3000);
+      videoWrapper.classList.remove('idle');
+      
+      clearTimeout(hideControlsTimeout);
+      
+      hideControlsTimeout = setTimeout(() => {
+        if (!videoEl.paused) {
+          customControls.classList.remove('active');
+          videoWrapper.classList.add('idle');
+        }
+      }, 3000);
+    }
+
+    videoWrapper.addEventListener('mousemove', showControls);
+    videoWrapper.addEventListener('touchstart', showControls);
+    videoWrapper.addEventListener('click', showControls);
+    
+    videoEl.addEventListener('play', showControls);
+    videoEl.addEventListener('pause', () => {
+      showControls();
+      clearTimeout(hideControlsTimeout);
     });
 
     function startForcedBuffering() {
@@ -289,6 +318,7 @@
           leftTapZone.classList.remove('hidden');
           rightTapZone.classList.remove('hidden');
           playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+          showControls();
         }
       }, 1000);
     }
