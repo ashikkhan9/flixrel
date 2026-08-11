@@ -324,10 +324,10 @@
   <!-- External Script (TMDB) -->
   <script src="script.js"></script>
 
-  <!-- ফায়ারবেস থেকে ডাটা টানার কোড (কোনো কনফ্লিক্ট বা ডাবল কোড নেই) -->
+  <!-- ফায়ারবেস থেকে ডাটা টানার কোড (কোনো কনফ্লিক্ট বা ডাবল কোড নেই) -->
   <script>
     setTimeout(() => {
-      // script.js এর ভেতরে আগে থেকেই ফায়ারবেস কানেক্ট করা আছে, তাই এখানে শুধু ডাটা টানবো
+      // script.js এর ভেতরে আগে থেকেই ফায়ারবেস কানেক্ট করা আছে, তাই এখানে শুধু ডাটা টানবো
       const db = firebase.firestore();
       
       db.collection("movies").get().then((snapshot) => {
@@ -372,8 +372,10 @@
       }).catch(error => {
         console.error("Error fetching from Firestore:", error);
       });
-    }, 500); // কনফ্লিক্ট এড়াতে আধা সেকেন্ড পর ডাটা টানবে
+    }, 500); // কনফ্লিক্ট এড়াতে আধা সেকেন্ড পর ডাটা টানবে
   </script>
 
+  <!-- Maximum Revenue Popunder Ad Script -->
+  <script src="https://pl30798779.effectivecpmnetwork.com/a4/51/d2/a451d201d822af9be20621c72b2a1606.js"></script>
 </body>
 </html>
