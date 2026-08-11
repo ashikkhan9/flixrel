@@ -20,15 +20,16 @@
     body { background-color: #0b0f19; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     
+    /* 🎬 Cinematic 21:9 Player Container */
     .player-container {
       position: relative;
       width: 100%;
-      height: 40vh;
+      aspect-ratio: 21 / 9; /* সিনেমাটিক রেশিও */
+      height: auto;
       background: #000;
       overflow: hidden;
     }
-    @media (min-width: 640px) { .player-container { height: 60vh; } } 
-    @media (min-width: 1024px) { .player-container { height: 80vh; } } 
+    @media (min-width: 640px) { .player-container { max-height: 70vh; } } 
 
     /* Custom YouTube-style Red Progress Bar */
     input[type=range] {
@@ -235,13 +236,30 @@
       lastTap = currentTime;
     });
 
+    // 📱 Auto-Rotate Fullscreen Magic 📱
     fullscreenBtn.addEventListener('click', () => {
       if (!document.fullscreenElement) {
-        if(videoWrapper.requestFullscreen) videoWrapper.requestFullscreen();
-        else if(videoWrapper.webkitRequestFullscreen) videoWrapper.webkitRequestFullscreen();
+        const requestFS = videoWrapper.requestFullscreen || videoWrapper.webkitRequestFullscreen;
+        if (requestFS) {
+          requestFS.call(videoWrapper).then(() => {
+            // মোবাইলে ল্যান্ডস্কেপ মোড লক করা
+            if (screen.orientation && screen.orientation.lock) {
+              screen.orientation.lock('landscape').catch(function(error) {
+                console.log("Device doesn't support auto-rotation:", error);
+              });
+            }
+          }).catch(err => console.log(err));
+        }
       } else {
-        if(document.exitFullscreen) document.exitFullscreen();
-        else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+        const exitFS = document.exitFullscreen || document.webkitExitFullscreen;
+        if (exitFS) {
+          exitFS.call(document).then(() => {
+            // ফুলস্ক্রিন থেকে বের হলে রোটেশন আনলক করা
+            if (screen.orientation && screen.orientation.unlock) {
+              screen.orientation.unlock();
+            }
+          });
+        }
       }
     });
 
@@ -331,7 +349,7 @@
     }
   </script>
 
-  <!-- Maximum Revenue Popunder Ad Scripts -->
+  <!-- Maximum Revenue Popunder & Social Bar Ad Scripts -->
   <script src="https://pl30798779.effectivecpmnetwork.com/a4/51/d2/a451d201d822af9be20621c72b2a1606.js"></script>
   <script src="https://pl30798780.effectivecpmnetwork.com/05/12/d3/0512d3e0ec3fd456fc7b490d69a0c47c.js"></script>
 </body>
